@@ -1,6 +1,10 @@
 import { Canvas } from "@react-three/fiber";
 import { XR, createXRStore, XRHandModel } from "@react-three/xr";
 import { FC, Suspense, useEffect, useState } from "react";
+import { MediaPipeHandTracker } from "./MediaPipeHandTracker.tsx";
+import { useRef } from "react";
+import * as THREE from "three";
+
 
 const store = createXRStore({
   hand: XRHandModel,
@@ -8,7 +12,11 @@ const store = createXRStore({
 });
 
 export const Scene: FC = () => {
+  const meshRef = useRef<THREE.Mesh>(null);
+
   const [supported, setSupported] = useState(false);
+  const [useMediaPipe, setUseMediaPipe] = useState(false);
+
   const [ar, setAR] = useState(false);
   const [red, setRed] = useState(false);
 
@@ -35,6 +43,18 @@ export const Scene: FC = () => {
   };
 
   useEffect(() => {
+    (async () => {
+      const arSupported = "xr" in navigator && await navigator.xr!.isSessionSupported("immersive-ar");
+      setSupported(arSupported);
+  
+      if (!arSupported || !(navigator as any).xr?.hand) {
+        setUseMediaPipe(true); // fallback to MediaPipe
+      }
+    })();
+  }, []);
+  
+
+  useEffect(() => {
     // Bessere Erkennung für den Support von AR.
     (async () => {
       console.log("Checking support for AR...");
@@ -57,6 +77,7 @@ export const Scene: FC = () => {
         <XR store={store}>
           <Suspense>
             <mesh
+              ref={meshRef}
               pointerEventsType={{ deny: "grab" }}
               onClick={() => setRed(!red)}
               position={[0, 1, -1]}
@@ -67,6 +88,17 @@ export const Scene: FC = () => {
           </Suspense>
         </XR>
       </Canvas>
+      {useMediaPipe && (
+  <MediaPipeHandTracker
+    onHandMove={([x, y]) => {
+      if (meshRef.current) {
+        meshRef.current.position.x = x;
+        meshRef.current.position.y = y + 1; // +1 to keep it above floor
+      }
+    }}
+  />
+)}
+
     </>
   );
 };
