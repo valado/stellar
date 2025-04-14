@@ -10,7 +10,7 @@ import {
   createXRStore,
   useXRInputSourceStateContext,
 } from "@react-three/xr";
-import { FC, useEffect, useState } from "react";
+import { FC, Suspense, useEffect, useState } from "react";
 import { HitTest, onResults } from "../HitTest";
 import { House } from "../House";
 
@@ -111,8 +111,10 @@ export const Scene: FC = () => {
             <XRDomOverlay>
               <button onClick={exitAR}>Exit AR</button>
             </XRDomOverlay>
-            <HitTest />
-            <House />
+            <Suspense fallback={null}>
+              <HitTest />
+              <House />
+            </Suspense>
           </IfInSessionMode>
         </XR>
       </Canvas>

@@ -1,10 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useGLTF } from "@react-three/drei";
 import { useXRInputSourceEvent } from "@react-three/xr";
 import * as THREE from "three";
 import { hitTestMatrices } from "../HitTest";
 
-const MODEL_PATH = "/models/stellar_house.glb";
+const MODEL_PATH = "/models/house.glb";
 
 useGLTF.preload(MODEL_PATH);
 
@@ -41,11 +41,26 @@ export const House = () => {
   );
 
   return (
-    <group {...house} scale={0.3} dispose={null}>
+    <group {...house} scale={0.5} dispose={null}>
       <mesh
-        geometry={nodes.Plane.geometry}
-        material={nodes.Plane.material}
-        rotation={[0, 0, 0]}
+        geometry={nodes.House_1.geometry}
+        material={nodes.House_1.material}
+        rotation={[Math.PI / 2, 0, Math.PI / 2]}
+      />
+      <mesh
+        geometry={nodes.House_2.geometry}
+        material={nodes.House_2.material}
+        rotation={[Math.PI / 2, 0, Math.PI / 2]}
+      />
+      <mesh
+        geometry={nodes.House_3.geometry}
+        material={nodes.House_3.material}
+        rotation={[Math.PI / 2, 0, Math.PI / 2]}
+      />
+      <mesh
+        geometry={nodes.House_4.geometry}
+        material={nodes.House_4.material}
+        rotation={[Math.PI / 2, 0, Math.PI / 2]}
       />
     </group>
   );
