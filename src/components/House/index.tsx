@@ -41,7 +41,7 @@ export const House = () => {
   );
 
   return (
-    <group {...house} scale={0.5} dispose={null}>
+    <group {...house} scale={0.3} dispose={null}>
       <mesh
         geometry={nodes.House_1.geometry}
         material={nodes.House_1.material}
