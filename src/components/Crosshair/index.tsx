@@ -2,6 +2,7 @@ import { forwardRef, memo, useRef } from "react";
 import { ThreeElements, useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import { BufferGeometryUtils } from "three/examples/jsm/Addons.js";
+import { hitTestMatrices } from "../HitTest";
 
 type CrosshairMeshProps = ThreeElements["mesh"] & {
   color: string;
@@ -34,7 +35,15 @@ export const Crosshair = memo<CrosshairProps>(({ handedness }) => {
       return;
     }
 
-    // TODO: Rest hinzufügen.
+    const matrix = hitTestMatrices[handedness];
+
+    if (matrix) {
+      meshRef.current.visible = true;
+      meshRef.current.position.setFromMatrixPosition(matrix);
+      meshRef.current.quaternion.setFromRotationMatrix(matrix);
+    } else {
+      meshRef.current.visible = false;
+    }
   });
 
   return <CrosshairMesh ref={meshRef} visible={false} color="white" />;

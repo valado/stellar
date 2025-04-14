@@ -1,17 +1,52 @@
 import { Canvas } from "@react-three/fiber";
 import {
+  DefaultXRController,
+  DefaultXRHand,
   IfInSessionMode,
   XR,
   XRDomOverlay,
+  XRHitTest,
+  XRSpace,
   createXRStore,
+  useXRInputSourceStateContext,
 } from "@react-three/xr";
 import { FC, useEffect, useState } from "react";
+import { HitTest, onResults } from "../HitTest";
+import { House } from "../House";
 
 const store = createXRStore({
   domOverlay: true,
   hitTest: true,
   anchors: true,
   layers: true,
+  hand: () => {
+    const state = useXRInputSourceStateContext();
+
+    return (
+      <>
+        <DefaultXRHand />
+        <XRSpace space={state.inputSource.targetRaySpace}>
+          <XRHitTest
+            onResults={onResults.bind(null, state.inputSource.handedness)}
+          />
+        </XRSpace>
+      </>
+    );
+  },
+  controller: () => {
+    const state = useXRInputSourceStateContext();
+
+    return (
+      <>
+        <DefaultXRController />
+        <XRSpace space={state.inputSource.targetRaySpace}>
+          <XRHitTest
+            onResults={onResults.bind(null, state.inputSource.handedness)}
+          />
+        </XRSpace>
+      </>
+    );
+  },
 });
 
 export const Scene: FC = () => {
@@ -70,10 +105,14 @@ export const Scene: FC = () => {
       )}
       <Canvas>
         <XR store={store}>
+          <directionalLight position={[1, 2, 1]} />
+          <ambientLight />
           <IfInSessionMode>
             <XRDomOverlay>
               <button onClick={exitAR}>Exit AR</button>
             </XRDomOverlay>
+            <HitTest />
+            <House />
           </IfInSessionMode>
         </XR>
       </Canvas>
