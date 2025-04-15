@@ -1,7 +1,19 @@
 import { FC, useMemo } from "react";
 import { useLabelStore } from "../../stores/label";
 
-export const Label: FC = () => {
+type Props = {
+  title: string;
+  value: string;
+  offsetX?: number;
+  offsetY?: number;
+};
+
+export const Label: FC<Props> = ({
+  title,
+  value,
+  offsetX = 0,
+  offsetY = 0,
+}) => {
   const position = useLabelStore((state) => state.position);
 
   const { x, y } = useMemo(() => {
@@ -22,12 +34,13 @@ export const Label: FC = () => {
         flexDirection: "column",
         padding: "1em",
         background: "rgba(255, 255, 255, 0.75)",
-        left: `${x}px`,
-        top: `${y}px`,
+        left: `${x + offsetX}px`,
+        top: `${y + offsetY}px`,
+        fontSize: "0.75em",
       }}
     >
-      <span>Immobilienwert</span>
-      <span>€ 2.650.000</span>
+      <span style={{ fontWeight: "bold" }}>{title}</span>
+      <span>{value}</span>
     </div>
   ) : null;
 };
