@@ -15,6 +15,7 @@ import { HitTest, onResults } from "../HitTest";
 import { House } from "../House";
 import { Projector } from "../Projector";
 import { Label } from "../Label";
+import { useCrosshairStore } from "../../stores/crosshair";
 
 const store = createXRStore({
   domOverlay: true,
@@ -95,6 +96,8 @@ export const Scene: FC = () => {
     })();
   }, []);
 
+  const ready = useCrosshairStore((state) => state.visible);
+
   return (
     <>
       {!ar && (
@@ -112,6 +115,20 @@ export const Scene: FC = () => {
           <IfInSessionMode>
             <XRDomOverlay style={{ position: "relative", height: "100dvh" }}>
               <button onClick={exitAR}>Exit AR</button>
+              {!ready && (
+                <span
+                  style={{
+                    position: "absolute",
+                    top: "50%",
+                    left: "50%",
+                    transform: "translate(-50%, -50%)",
+                    background: "rgba(255, 255, 255, 0.75)",
+                    padding: "1em",
+                  }}
+                >
+                  Scanne Umgebung...
+                </span>
+              )}
               <Label title="Immobilienwert" value="€ 2.650.000" offsetX={100} />
               <Label title="Energie-Effizienzklasse" value="B" offsetX={-200} />
               <Label
