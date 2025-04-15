@@ -13,6 +13,8 @@ import {
 import { FC, Suspense, useEffect, useState } from "react";
 import { HitTest, onResults } from "../HitTest";
 import { House } from "../House";
+import { Projector } from "../Projector";
+import { Label } from "../Label";
 
 const store = createXRStore({
   domOverlay: true,
@@ -108,11 +110,13 @@ export const Scene: FC = () => {
           <directionalLight position={[1, 2, 1]} />
           <ambientLight />
           <IfInSessionMode>
-            <XRDomOverlay>
+            <XRDomOverlay style={{ position: "relative", height: "100dvh" }}>
               <button onClick={exitAR}>Exit AR</button>
+              <Label />
             </XRDomOverlay>
             <Suspense fallback={null}>
               <HitTest />
+              <Projector />
               <House />
             </Suspense>
           </IfInSessionMode>

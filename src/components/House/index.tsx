@@ -1,20 +1,15 @@
-import { useEffect, useState } from "react";
 import { useGLTF } from "@react-three/drei";
 import { useXRInputSourceEvent } from "@react-three/xr";
 import * as THREE from "three";
+import { usePoseStore } from "../../stores/pose";
 import { hitTestMatrices } from "../HitTest";
 
 const MODEL_PATH = "/models/house.glb";
 
 useGLTF.preload(MODEL_PATH);
 
-type House = {
-  position: THREE.Vector3;
-  quaternion: THREE.Quaternion;
-};
-
 export const House = () => {
-  const [house, setHouse] = useState<House>(null!);
+  const { pose, setPose } = usePoseStore();
   const { nodes } = useGLTF(MODEL_PATH) as any;
 
   useXRInputSourceEvent(
@@ -32,7 +27,7 @@ export const House = () => {
 
       matrix.decompose(position, quaternion, new THREE.Vector3());
 
-      setHouse({
+      setPose({
         position,
         quaternion,
       });
@@ -41,27 +36,15 @@ export const House = () => {
   );
 
   return (
-    <group {...house} scale={0.3} dispose={null}>
-      <mesh
-        geometry={nodes.House_1.geometry}
-        material={nodes.House_1.material}
-        rotation={[Math.PI / 2, 0, Math.PI / 2]}
-      />
-      <mesh
-        geometry={nodes.House_2.geometry}
-        material={nodes.House_2.material}
-        rotation={[Math.PI / 2, 0, Math.PI / 2]}
-      />
-      <mesh
-        geometry={nodes.House_3.geometry}
-        material={nodes.House_3.material}
-        rotation={[Math.PI / 2, 0, Math.PI / 2]}
-      />
-      <mesh
-        geometry={nodes.House_4.geometry}
-        material={nodes.House_4.material}
-        rotation={[Math.PI / 2, 0, Math.PI / 2]}
-      />
+    <group {...pose} scale={0.3} dispose={null}>
+      {Object.values(nodes).map((node: any, key) => (
+        <mesh
+          geometry={node.geometry}
+          rotation={[Math.PI / 2, 0, Math.PI / 2]}
+          material={node.material}
+          key={key}
+        />
+      ))}
     </group>
   );
 };
