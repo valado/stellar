@@ -16,15 +16,18 @@ export const Label: FC<Props> = ({
 }) => {
   const position = useLabelStore((state) => state.position);
 
-  const { x, y } = useMemo(() => {
+  const { x, y, z } = useMemo(() => {
     const w = window.innerWidth / 2;
     const h = window.innerHeight / 2;
 
     return {
       x: (position.x * w + w) | 0,
       y: (-(position.y * h) + h) | 0,
+      z:  position.z
     };
   }, [window.innerWidth, window.innerHeight, position]);
+
+  const scale = 1 - z;
 
   return !Number.isNaN(position.x) && !Number.isNaN(position.y) ? (
     <div
@@ -36,7 +39,8 @@ export const Label: FC<Props> = ({
         background: "rgba(255, 255, 255, 0.75)",
         left: `${x + offsetX}px`,
         top: `${y + offsetY}px`,
-        fontSize: "0.75em",
+        fontSize: `${0.75 * scale}em`,
+        transform: `translate(-50%, -50%) scale(${scale})`,
       }}
     >
       <span style={{ fontWeight: "bold" }}>{title}</span>
