@@ -129,19 +129,33 @@ export const Scene: FC = () => {
                   Scanne Umgebung...
                 </span>
               )}
-              <Label title="Immobilienwert" value="€ 2.650.000" offsetX={100} />
-              <Label title="Energie-Effizienzklasse" value="B" offsetX={-200} />
-              <Label
-                title="Monatliche Hypothek"
-                value="€ 6.000"
-                offsetY={100}
-              />
+              {ready && (
+                <>
+                  <Label
+                    title="Immobilienwert"
+                    value="€ 2.650.000"
+                    offsetX={100}
+                  />
+                  <Label
+                    title="Energie-Effizienzklasse"
+                    value="B"
+                    offsetX={-200}
+                  />
+                  <Label
+                    title="Monatliche Hypothek"
+                    value="€ 6.000"
+                    offsetY={100}
+                  />
+                </>
+              )}
             </XRDomOverlay>
-            <Suspense fallback={null}>
-              <HitTest />
-              <Projector />
-              <House />
-            </Suspense>
+            {ready && (
+              <Suspense fallback={null}>
+                <HitTest />
+                <Projector />
+                <House />
+              </Suspense>
+            )}
           </IfInSessionMode>
         </XR>
       </Canvas>
