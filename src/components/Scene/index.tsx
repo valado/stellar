@@ -149,13 +149,15 @@ export const Scene: FC = () => {
                 </>
               )}
             </XRDomOverlay>
-            {ready && (
-              <Suspense fallback={null}>
-                <HitTest />
-                <Projector />
-                <House />
-              </Suspense>
-            )}
+            <Suspense fallback={null}>
+              <HitTest />
+              {ready && (
+                <>
+                  <Projector />
+                  <House />
+                </>
+              )}
+            </Suspense>
           </IfInSessionMode>
         </XR>
       </Canvas>
