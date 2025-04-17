@@ -11,11 +11,12 @@ import {
   useXRInputSourceStateContext,
 } from "@react-three/xr";
 import { FC, Suspense, useEffect, useState } from "react";
-import { HitTest, onResults } from "../HitTest";
+import { HitTest, hitTestMatrices, onResults } from "../HitTest";
 import { House } from "../House";
 import { Projector } from "../Projector";
 import { Label } from "../Label";
 import { useCrosshairStore } from "../../stores/crosshair";
+import { usePoseStore } from "../../stores/pose";
 
 const store = createXRStore({
   domOverlay: true,
@@ -77,6 +78,8 @@ export const Scene: FC = () => {
     }
   };
 
+  const resetPose = usePoseStore((state) => state.resetPose);
+
   const exitAR = () => {
     const { session } = store.getState();
 
@@ -85,6 +88,12 @@ export const Scene: FC = () => {
     }
 
     session.end();
+
+    resetPose();
+
+    Object.keys(hitTestMatrices).forEach((key) => {
+      delete hitTestMatrices[key as XRHandedness];
+    });
   };
 
   useEffect(() => {
