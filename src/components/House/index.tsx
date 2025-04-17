@@ -38,12 +38,7 @@ export const House = () => {
   return (
     <group {...pose} scale={0.3} dispose={null}>
       {Object.values(nodes).map((node: any, key) => (
-        <mesh
-          geometry={node.geometry}
-          rotation={[Math.PI / 2, 0, Math.PI / 2]}
-          material={node.material}
-          key={key}
-        />
+        <mesh geometry={node.geometry} material={node.material} key={key} />
       ))}
     </group>
   );
