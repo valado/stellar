@@ -1,5 +1,5 @@
 import { FC, useMemo } from "react";
-import { useLabelStore } from "../../stores/label";
+import { useLabelOriginStore } from "../../stores/labelOrigin";
 
 type Props = {
   title: string;
@@ -14,22 +14,22 @@ export const Label: FC<Props> = ({
   offsetX = 0,
   offsetY = 0,
 }) => {
-  const position = useLabelStore((state) => state.position);
+  const origin = useLabelOriginStore((state) => state.origin);
 
   const { x, y, z } = useMemo(() => {
     const w = window.innerWidth / 2;
     const h = window.innerHeight / 2;
 
     return {
-      x: (position.x * w + w) | 0,
-      y: (-(position.y * h) + h) | 0,
-      z:  position.z
+      x: (origin.x * w + w) | 0,
+      y: (-(origin.y * h) + h) | 0,
+      z: origin.z,
     };
-  }, [window.innerWidth, window.innerHeight, position]);
+  }, [window.innerWidth, window.innerHeight, origin]);
 
   const scale = 1 - z;
 
-  return !Number.isNaN(position.x) && !Number.isNaN(position.y) ? (
+  return !Number.isNaN(origin.x) && !Number.isNaN(origin.y) ? (
     <div
       style={{
         position: "absolute",
