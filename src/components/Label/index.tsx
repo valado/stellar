@@ -28,7 +28,7 @@ export const Label: FC<Props> = ({
   }, [window.innerWidth, window.innerHeight, origin]);
 
   const scale = 1 - z;
-  const opacity = Math.max(0, 1 - z * 0.5);
+  const opacity = z > 0.86 ? 1 : Math.max(0, (z - 0.7) / 1);
 
   return !Number.isNaN(origin.x) && !Number.isNaN(origin.y) ? (
 
