@@ -10,6 +10,7 @@ import {
 import { Button } from "../Button";
 import { useCrosshairStore } from "../../stores/crosshair";
 import { Label } from "../Label";
+import { Card } from "../Card";
 
 type Props = {
   onExit: MouseEventHandler;
@@ -53,27 +54,43 @@ export const Overlay: FC<Props> = ({ onExit: handleExit }) => {
         <Button onClick={handleExit}>
           <XIcon />
         </Button>
-        <Button onClick={toggleLabels}>
-          {areLabelsHidden ? <EyeClosedIcon /> : <EyeIcon />}
-        </Button>
+        {isReady && (
+          <Button onClick={toggleLabels}>
+            {areLabelsHidden ? <EyeClosedIcon /> : <EyeIcon />}
+          </Button>
+        )}
       </div>
-      <div
-        style={{
-          position: "absolute",
-          display: "flex",
-          gap: "1em",
-          left: "50%",
-          bottom: "4em",
-          transform: "translateX(-50%)",
-        }}
-      >
-        <Button onClick={toggleLabelCategory}>
-          <ArrowLeftIcon />
-        </Button>
-        <Button onClick={toggleLabelCategory}>
-          <ArrowRightIcon />
-        </Button>
-      </div>
+      {isReady && (
+        <div
+          style={{
+            position: "absolute",
+            display: "flex",
+            gap: "1em",
+            left: "50%",
+            bottom: "4em",
+            transform: "translateX(-50%)",
+          }}
+        >
+          <Button onClick={toggleLabelCategory}>
+            <ArrowLeftIcon />
+          </Button>
+          <Button onClick={toggleLabelCategory}>
+            <ArrowRightIcon />
+          </Button>
+        </div>
+      )}
+      {!isReady && (
+        <div
+          style={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+          }}
+        >
+          <Card>Scanne Umgebung...</Card>
+        </div>
+      )}
       {isReady &&
         !areLabelsHidden &&
         (labelCategory === "financial" ? (
