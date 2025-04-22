@@ -16,6 +16,7 @@
     "@react-three/fiber": "^9.1.2",
     "@react-three/xr": "^6.6.13",
     "immer": "^10.1.1",
+    "lucide-react": "^0.503.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "three": "^0.172.0",

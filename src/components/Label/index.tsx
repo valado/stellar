@@ -31,32 +31,30 @@ export const Label: FC<Props> = ({
   const opacity = z > 0.86 ? 1 : Math.max(0, (z - 0.7) / 1);
 
   return !Number.isNaN(origin.x) && !Number.isNaN(origin.y) ? (
-
     <div
       style={{
         position: "absolute",
         left: `${x + offsetX}px`,
         top: `${y + offsetY}px`,
         transform: `translate(-50%, -50%) scale(${scale * 10})`,
-        background: "rgba(255, 255, 255, 0.85)",
-        padding: "0.75em 1.2em",
-        borderRadius: "12px",
-        boxShadow: "0 4px 12px rgba(0, 0, 0, 0.2)",
-        backdropFilter: "blur(10px)",
-        fontFamily: "Segoe UI, Roboto, sans-serif",
-        fontSize: "0.9em",
-        color: "#333",
         display: "flex",
         flexDirection: "column",
         gap: "0.25em",
-        pointerEvents: "none",
+        background:
+          "radial-gradient(113% 91% at 17% -2%, #888888 1%, #FF000000 99%),radial-gradient(75% 75% at 50% 50%, #484848 0%, #606060 100%)",
+        backdropFilter: "blur(10px)",
+        padding: "1em",
+        border: "1px solid #484848",
+        borderRadius: "1em",
+        fontSize: "0.9em",
         opacity,
         transition: "opacity 0.2s ease",
+        pointerEvents: "none",
         zIndex: 10,
       }}
     >
       <span style={{ fontWeight: 600, fontSize: "1.05em" }}>{title}</span>
-      <span style={{ fontWeight: 400 }}>{value}</span>
+      <span style={{ color: "#9c9c9c" }}>{value}</span>
     </div>
   ) : null;
 };

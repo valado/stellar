@@ -1,22 +1,23 @@
+import { FC, MouseEvent, Suspense, useEffect, useState } from "react";
 import { Canvas } from "@react-three/fiber";
 import {
   DefaultXRController,
   DefaultXRHand,
-  IfInSessionMode,
   XR,
-  XRDomOverlay,
   XRHitTest,
   XRSpace,
   createXRStore,
   useXRInputSourceStateContext,
 } from "@react-three/xr";
-import { FC, Suspense, useEffect, useState } from "react";
+import { Card } from "../Card";
+import { Button } from "../Button";
+import { Overlay } from "../Overlay";
 import { HitTest, hitTestMatrices, onResults } from "../HitTest";
 import { House } from "../House";
 import { Projector } from "../Projector";
-import { Label } from "../Label";
 import { useCrosshairStore } from "../../stores/crosshair";
 import { usePoseStore } from "../../stores/pose";
+import { useARStore } from "../../stores/ar";
 
 const store = createXRStore({
   domOverlay: true,
@@ -55,7 +56,18 @@ const store = createXRStore({
 
 export const Scene: FC = () => {
   const [supported, setSupported] = useState(false);
-  const [ar, setAR] = useState(false);
+  const { isAR, setIsAR } = useARStore();
+  const isReady = useCrosshairStore((state) => state.visible);
+  const resetPose = usePoseStore((state) => state.resetPose);
+
+  useEffect(() => {
+    (async () => {
+      setSupported(
+        !!navigator.xr &&
+          (await navigator.xr!.isSessionSupported("immersive-ar"))
+      );
+    })();
+  }, []);
 
   const enterAR = async () => {
     try {
@@ -67,20 +79,20 @@ export const Scene: FC = () => {
       }
 
       session.onend = () => {
-        setAR(false);
+        setIsAR(false);
         console.log("[Session]", "Ending current AR session.");
       };
 
-      setAR(true);
+      setIsAR(true);
       console.log("[Session]", "Starting new AR session.");
     } catch (err: unknown) {
       console.error("[Session]", "Failed to retrieve AR session.", err);
     }
   };
 
-  const resetPose = usePoseStore((state) => state.resetPose);
+  const exitAR = (event: MouseEvent) => {
+    event.stopPropagation();
 
-  const exitAR = () => {
     const { session } = store.getState();
 
     if (!session) {
@@ -96,78 +108,45 @@ export const Scene: FC = () => {
     });
   };
 
-  useEffect(() => {
-    (async () => {
-      setSupported(
-        !!navigator.xr &&
-          (await navigator.xr!.isSessionSupported("immersive-ar"))
-      );
-    })();
-  }, []);
-
-  const ready = useCrosshairStore((state) => state.visible);
-
   return (
     <>
-      {!ar && (
-        <>
-          <span style={{ display: "block" }}>
-            Supported: {JSON.stringify(supported)}
-          </span>
-          <button onClick={enterAR}>Enter AR</button>
-        </>
-      )}
+      {!isAR &&
+        (supported ? (
+          <Button onClick={enterAR}>Enter AR</Button>
+        ) : (
+          <Card>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "0.25em",
+              }}
+            >
+              <span style={{ fontSize: "1.05em", fontWeight: 700 }}>
+                Entschuldigung!
+              </span>
+              <span style={{ color: "#9c9c9c" }}>
+                Dieser Browser unterstützt WebXR nicht.
+              </span>
+            </div>
+          </Card>
+        ))}
       <Canvas>
         <XR store={store}>
           <directionalLight position={[1, 2, 1]} />
           <ambientLight />
-          <IfInSessionMode>
-            <XRDomOverlay style={{ position: "relative", height: "100dvh" }}>
-              <button onClick={exitAR}>Exit AR</button>
-              {!ready && (
-                <span
-                  style={{
-                    position: "absolute",
-                    top: "50%",
-                    left: "50%",
-                    transform: "translate(-50%, -50%)",
-                    background: "rgba(255, 255, 255, 0.75)",
-                    padding: "1em",
-                  }}
-                >
-                  Scanne Umgebung...
-                </span>
-              )}
-              {ready && (
-                <>
-                  <Label
-                    title="Immobilienwert"
-                    value="€ 2.650.000"
-                    offsetX={100}
-                  />
-                  <Label
-                    title="Energie-Effizienzklasse"
-                    value="B"
-                    offsetX={-200}
-                  />
-                  <Label
-                    title="Monatliche Hypothek"
-                    value="€ 6.000"
-                    offsetY={100}
-                  />
-                </>
-              )}
-            </XRDomOverlay>
+          {isAR && (
             <Suspense fallback={null}>
+              <Overlay onExit={exitAR} />
               <HitTest />
-              {ready && (
+              {isReady && (
                 <>
                   <Projector />
                   <House />
                 </>
               )}
             </Suspense>
-          </IfInSessionMode>
+          )}
         </XR>
       </Canvas>
     </>
