@@ -19,6 +19,9 @@ import { Projector } from "../Projector";
 import { useCrosshairStore } from "../../stores/crosshair";
 import { usePoseStore } from "../../stores/pose";
 import { useARStore } from "../../stores/ar";
+import { useRef } from "react";
+import * as THREE from "three";
+import { HouseScaler } from "../Housescaler";
 
 const store = createXRStore({
   domOverlay: true,
@@ -56,6 +59,9 @@ const store = createXRStore({
 });
 
 export const Scene: FC = () => {
+  const houseRef = useRef<THREE.Group>(null);
+
+
   const [supported, setSupported] = useState(false);
   const { isAR, setIsAR } = useARStore();
   const isReady = useCrosshairStore((state) => state.visible);
@@ -168,7 +174,8 @@ export const Scene: FC = () => {
               {isReady && (
                 <>
                   <Projector />
-                  <House />
+                  <House ref={houseRef} />
+                  <HouseScaler houseRef={houseRef} />
                 </>
               )}
             </Suspense>

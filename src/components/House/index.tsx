@@ -3,14 +3,21 @@ import { useXRInputSourceEvent } from "@react-three/xr";
 import * as THREE from "three";
 import { usePoseStore } from "../../stores/pose";
 import { hitTestMatrices } from "../HitTest";
+import { forwardRef, useImperativeHandle, useRef } from "react";
+
 
 const MODEL_PATH = "/models/house.glb";
 
 useGLTF.preload(MODEL_PATH);
 
-export const House = () => {
+
+export const House = forwardRef<THREE.Group>((props, ref) => {
+  const groupRef = useRef<THREE.Group>(null);
   const { pose, setPose } = usePoseStore();
   const { nodes } = useGLTF(MODEL_PATH) as any;
+
+
+  useImperativeHandle(ref, () => groupRef.current!, []);
 
   useXRInputSourceEvent(
     "all",
@@ -36,7 +43,7 @@ export const House = () => {
   );
 
   return (
-    <group {...pose} scale={0.3} dispose={null}>
+    <group {...pose} scale={0.3} ref={groupRef} dispose={null}>
       {Object.values(nodes).map((node: any, key) => (
         <mesh
           geometry={node.geometry}
@@ -47,4 +54,4 @@ export const House = () => {
       ))}
     </group>
   );
-};
+});
