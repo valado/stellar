@@ -9,6 +9,7 @@ import {
   createXRStore,
   useXRInputSourceStateContext,
 } from "@react-three/xr";
+import { Environment } from "@react-three/drei";
 import { Card } from "../Card";
 import { Button } from "../Button";
 import { Overlay } from "../Overlay";
@@ -133,8 +134,10 @@ export const Scene: FC = () => {
         ))}
       <Canvas>
         <XR store={store}>
-          <directionalLight position={[1, 2, 1]} />
-          <ambientLight />
+          <Environment
+            files="/hdr/hochsal_field_1k.hdr"
+            environmentRotation={[0, 0, Math.PI / 5]}
+          />
           {isAR && (
             <Suspense fallback={null}>
               <Overlay onExit={exitAR} />
