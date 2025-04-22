@@ -111,27 +111,50 @@ export const Scene: FC = () => {
 
   return (
     <>
-      {!isAR &&
-        (supported ? (
-          <Button onClick={enterAR}>Enter AR</Button>
-        ) : (
-          <Card>
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                gap: "0.25em",
-              }}
-            >
-              <span style={{ fontSize: "1.05em", fontWeight: 700 }}>
-                Entschuldigung!
-              </span>
-              <span style={{ color: "#9c9c9c" }}>
-                Dieser Browser unterstützt WebXR nicht.
-              </span>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+          gap: "2em",
+        }}
+      >
+        <img
+          src="/logo.png"
+          alt="Sopra Steria CSS Logo"
+          style={{
+            display: "block",
+            width: "256px",
+          }}
+        />
+        <span style={{ color: "#9c9c9c", fontSize: "1.5em", fontWeight: 700 }}>
+          House Demo
+        </span>
+        {!isAR &&
+          (supported ? (
+            <div>
+              <Button onClick={enterAR}>Enter AR</Button>
             </div>
-          </Card>
-        ))}
+          ) : (
+            <Card>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "0.25em",
+                }}
+              >
+                <span style={{ fontSize: "1.05em", fontWeight: 700 }}>
+                  Entschuldigung!
+                </span>
+                <span style={{ color: "#9c9c9c" }}>
+                  Dieser Browser unterstützt WebXR nicht.
+                </span>
+              </div>
+            </Card>
+          ))}
+      </div>
       <Canvas>
         <XR store={store}>
           <Environment
