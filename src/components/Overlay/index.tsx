@@ -11,6 +11,7 @@ import { Button } from "../Button";
 import { useCrosshairStore } from "../../stores/crosshair";
 import { Label } from "../Label";
 import { Card } from "../Card";
+import { Loader } from "../Loader";
 
 type Props = {
   onExit: MouseEventHandler;
@@ -39,7 +40,7 @@ export const Overlay: FC<Props> = ({ onExit: handleExit }) => {
       style={{
         position: "relative",
         height: "100dvh",
-        padding: "1em",
+        padding: "2em 1em",
         zIndex: 10,
       }}
     >
@@ -88,7 +89,20 @@ export const Overlay: FC<Props> = ({ onExit: handleExit }) => {
             transform: "translate(-50%, -50%)",
           }}
         >
-          <Card>Scanne Umgebung...</Card>
+          <Card>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                alignItems: "center",
+                gap: "0.5em",
+              }}
+            >
+              <Loader />
+              <span>Scanne Umgebung…</span>
+            </div>
+          </Card>
         </div>
       )}
       {isReady &&
