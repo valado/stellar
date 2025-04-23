@@ -61,7 +61,6 @@ const store = createXRStore({
 export const Scene: FC = () => {
   const houseRef = useRef<THREE.Group>(null);
 
-
   const [supported, setSupported] = useState(false);
   const { isAR, setIsAR } = useARStore();
   const isReady = useCrosshairStore((state) => state.visible);
@@ -140,7 +139,7 @@ export const Scene: FC = () => {
         {!isAR &&
           (supported ? (
             <div>
-              <Button onClick={enterAR}>Enter AR</Button>
+              <Button onClick={enterAR}>AR-Umgebung starten</Button>
             </div>
           ) : (
             <Card>
