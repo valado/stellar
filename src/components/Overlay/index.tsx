@@ -1,11 +1,18 @@
-import { FC, MouseEvent, MouseEventHandler, useState } from "react";
+import {
+  FC,
+  MouseEvent,
+  MouseEventHandler,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { XRDomOverlay } from "@react-three/xr";
 import {
   XIcon,
   EyeIcon,
   EyeClosedIcon,
-  ArrowLeftIcon,
-  ArrowRightIcon,
+  RulerDimensionLineIcon,
+  EuroIcon,
 } from "lucide-react";
 import { Button } from "../Button";
 import { useCrosshairStore } from "../../stores/crosshair";
@@ -20,10 +27,31 @@ type Props = {
 type LabelCategory = "financial" | "physical";
 
 export const Overlay: FC<Props> = ({ onExit: handleExit }) => {
+  const timeout = useRef<ReturnType<typeof setTimeout>>(null!);
+  const [isTakingLong, setIsTakingLong] = useState(false);
+
   const [areLabelsHidden, setAreLabelsHidden] = useState(false);
   const [labelCategory, setLabelCategory] =
     useState<LabelCategory>("financial");
   const isReady = useCrosshairStore((state) => state.visible);
+
+  useEffect(() => {
+    if (!isReady) {
+      timeout.current = setTimeout(() => {
+        setIsTakingLong(true);
+      }, 10 * 1000);
+    } else {
+      if (timeout.current) {
+        clearTimeout(timeout.current);
+      }
+    }
+
+    return () => {
+      if (timeout.current) {
+        clearTimeout(timeout.current);
+      }
+    };
+  }, [isReady]);
 
   const toggleLabels = (event: MouseEvent) => {
     event.stopPropagation();
@@ -67,16 +95,17 @@ export const Overlay: FC<Props> = ({ onExit: handleExit }) => {
             position: "absolute",
             display: "flex",
             gap: "1em",
-            left: "50%",
-            bottom: "4em",
-            transform: "translateX(-50%)",
+            right: "1em",
+            bottom: "2.5em",
+            transform: "translateY(-100%)",
           }}
         >
           <Button onClick={toggleLabelCategory}>
-            <ArrowLeftIcon />
-          </Button>
-          <Button onClick={toggleLabelCategory}>
-            <ArrowRightIcon />
+            {labelCategory === "financial" ? (
+              <EuroIcon />
+            ) : (
+              <RulerDimensionLineIcon />
+            )}
           </Button>
         </div>
       )}
@@ -86,7 +115,7 @@ export const Overlay: FC<Props> = ({ onExit: handleExit }) => {
             position: "absolute",
             top: "50%",
             left: "50%",
-            transform: "translate(-50%, -50%)",
+            transform: "translate(-50%, -100%)",
           }}
         >
           <Card>
@@ -97,10 +126,16 @@ export const Overlay: FC<Props> = ({ onExit: handleExit }) => {
                 justifyContent: "center",
                 alignItems: "center",
                 gap: "0.5em",
+                textAlign: "center",
               }}
             >
               <Loader />
-              <span>Scanne Umgebung…</span>
+              <span style={{ fontSize: "1.05em" }}>Scanne Umgebung…</span>
+              {isTakingLong && (
+                <span style={{ color: "#9c9c9c" }}>
+                  Das dauert länger als gewöhnlich…
+                </span>
+              )}
             </div>
           </Card>
         </div>
