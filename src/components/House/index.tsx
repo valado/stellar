@@ -5,17 +5,14 @@ import { usePoseStore } from "../../stores/pose";
 import { hitTestMatrices } from "../HitTest";
 import { forwardRef, useImperativeHandle, useRef } from "react";
 
-
 const MODEL_PATH = "/models/house.glb";
 
 useGLTF.preload(MODEL_PATH);
 
-
-export const House = forwardRef<THREE.Group>((props, ref) => {
+export const House = forwardRef<THREE.Group>((_, ref) => {
   const groupRef = useRef<THREE.Group>(null);
   const { pose, setPose } = usePoseStore();
   const { nodes } = useGLTF(MODEL_PATH) as any;
-
 
   useImperativeHandle(ref, () => groupRef.current!, []);
 
