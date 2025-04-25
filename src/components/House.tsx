@@ -73,7 +73,7 @@ export const House: FC = () => {
       window.removeEventListener("touchcancel", onTouchEnd);
       window.removeEventListener("touchend", onTouchMove);
     };
-  }, []);
+  }, [isPoseSet]);
 
   // Logic for placing the house model at the selected location.
   useXRInputSourceEvent(
