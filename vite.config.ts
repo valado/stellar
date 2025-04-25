@@ -1,14 +1,13 @@
-// @ts-expect-error
 import fs from "node:fs";
+import { URL } from "node:url";
 import { defineConfig } from "vite";
+import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react-swc";
 
-// @ts-expect-error: `process` is a Node.js global.
 const dev = process.env.NODE_ENV !== "production";
 
-// https://vite.dev/config/
 export default defineConfig({
-  plugins: [react()],
+  plugins: [tailwindcss(), react()],
   server: {
     https: dev
       ? {
@@ -16,5 +15,21 @@ export default defineConfig({
           cert: fs.readFileSync("ca/cert.pem"),
         }
       : undefined,
+  },
+  resolve: {
+    alias: [
+      {
+        find: "$components",
+        replacement: new URL("src/components", import.meta.url).pathname,
+      },
+      {
+        find: "$hooks",
+        replacement: new URL("src/hooks", import.meta.url).pathname,
+      },
+      {
+        find: "$stores",
+        replacement: new URL("src/stores", import.meta.url).pathname,
+      },
+    ],
   },
 });
