@@ -1,8 +1,12 @@
-import "./App.css";
-import { Scene } from "./components/Scene";
+import { Scene } from "$components/Scene";
+import { Welcome } from "$components/Welcome";
 
-function App() {
-  return <Scene />;
-}
+// Types
+import type { FC } from "react";
 
-export default App;
+export const App: FC = () => (
+  <>
+    <Welcome />
+    <Scene />
+  </>
+);

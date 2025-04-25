@@ -1,34 +1,27 @@
 import { create } from "zustand";
-import { immer } from "zustand/middleware/immer";
-import * as THREE from "three";
+
+// Types
+import type { Vector3, Quaternion } from "three";
 
 type Pose = {
-  position: THREE.Vector3;
-  quaternion: THREE.Quaternion;
+  position: Vector3;
+  quaternion: Quaternion;
 };
 
 type PoseState = {
-  pose: Pose;
+  pose: Pose | null;
+  isPoseSet: boolean;
   setPose: (pose: Pose) => void;
   resetPose: () => void;
 };
 
-const DEFAULT_POSE = {
-  position: new THREE.Vector3(),
-  quaternion: new THREE.Quaternion(),
-};
-
-export const usePoseStore = create<PoseState>()(
-  immer((set) => ({
-    pose: DEFAULT_POSE,
-    setPose: (pose) =>
-      set((state) => {
-        state.pose = pose;
-      }),
-    resetPose: () => {
-      set((state) => {
-        state.pose = DEFAULT_POSE;
-      });
-    },
-  }))
-);
+export const usePose = create<PoseState>((set) => ({
+  pose: null,
+  isPoseSet: false,
+  setPose: (pose) =>
+    set({
+      isPoseSet: true,
+      pose,
+    }),
+  resetPose: () => set({ isPoseSet: false, pose: null }),
+}));
