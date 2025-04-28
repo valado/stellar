@@ -13,7 +13,7 @@ export const useXRSessionEnter = () => {
 
   return async () => {
     if (isInAR) {
-      return;
+      return false;
     }
 
     try {
@@ -21,7 +21,7 @@ export const useXRSessionEnter = () => {
 
       if (!session) {
         console.error("[Session]", "Failed to start session.");
-        return;
+        return false;
       }
 
       session.addEventListener("end", () => {
@@ -34,8 +34,10 @@ export const useXRSessionEnter = () => {
 
       setIsInAR(true);
       console.log("[Session]", "Starting new AR session.");
+      return true;
     } catch (error) {
       console.error("[Session]", "Failed to start session.", error);
+      return false;
     }
   };
 };
@@ -46,19 +48,21 @@ export const useXRSessionEnd = () => {
 
   return async () => {
     if (!isInAR) {
-      return;
+      return false;
     }
 
     const { session } = store.getState();
 
     if (!session) {
-      return;
+      return false;
     }
 
     try {
       await session.end();
+      return true;
     } catch (error) {
       console.error("[Session]", "Failed to end session.", error);
+      return false;
     }
   };
 };

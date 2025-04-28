@@ -12,13 +12,15 @@ import type { FC, MouseEventHandler } from "react";
 
 export const Welcome: FC = () => {
   const [isXRSupported, setIsXRSupported] = useState(false);
+  const [error, setError] = useState("");
+
   const startSession = useXRSessionEnter();
 
   useEffect(() => {
     console.clear();
     console.log(
       "%cSopra Steria",
-      "background: linear-gradient(314deg, #DE1924, #F67300);" +
+      "background: linear-gradient(314deg, #de1924, #f67300);" +
         "color: #ffffff;" +
         "padding: 1em;" +
         "border-radius: 0.5em;",
@@ -26,17 +28,29 @@ export const Welcome: FC = () => {
     );
 
     checkXRSupport();
-  });
+  }, []);
 
   const checkXRSupport = async () => {
-    setIsXRSupported(
-      !!navigator.xr && (await navigator.xr.isSessionSupported("immersive-ar"))
-    );
+    const isSupported =
+      !!navigator.xr && (await navigator.xr.isSessionSupported("immersive-ar"));
+
+    setIsXRSupported(isSupported);
+
+    if (!isSupported) {
+      setError("Leider unterstützt dieser Browser WebXR nicht.");
+    }
   };
 
   const enterAR: MouseEventHandler = async (event) => {
     event.stopPropagation();
-    await startSession();
+
+    const success = await startSession();
+
+    if (!success) {
+      setError(
+        "Ein Fehler ist aufgetreten. Womöglich unterstützt dieser Browser WebXR nicht."
+      );
+    }
   };
 
   return (
@@ -51,17 +65,18 @@ export const Welcome: FC = () => {
           AR Immobilien Demo
         </span>
       </div>
-      {isXRSupported ? (
+
+      {isXRSupported && (
         <Button onClick={enterAR}>
           <span className="block px-3 py-2">AR-Umgebung starten</span>
         </Button>
-      ) : (
+      )}
+
+      {error && (
         <Card>
           <div className="flex flex-col gap-2 max-w-64">
             <span className="text-xl">Entschuldigung</span>
-            <span className="text-neutral-400">
-              Leider unterstützt dieser Browser WebXR nicht.
-            </span>
+            <span className="text-neutral-400">{error}</span>
           </div>
         </Card>
       )}
