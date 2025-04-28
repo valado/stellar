@@ -25,7 +25,7 @@ export const Scene: FC = () => {
           {!isPoseSet && <HitTest />}
           <Suspense fallback={null}>
             <Environment
-              files="hdr/hochsal_field_1k.hdr"
+              files="/hdr/hochsal_field_1k.hdr"
               environmentRotation={[0, 0, Math.PI / 5]}
             />
             <House />

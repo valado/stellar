@@ -1,4 +1,4 @@
-import { Scene } from "$components/demo/house/Scene";
+import { Scene } from "$components/demo/finance/Scene";
 import { Welcome } from "$components/Welcome";
 
 // Types
