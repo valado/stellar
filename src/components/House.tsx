@@ -46,7 +46,7 @@ export const House: FC = () => {
       if (lastTouchDistanceRef.current !== null) {
         const scaleChange = newDistance / lastTouchDistanceRef.current;
         const oldScale = scale.clone();
-        const newScale = oldScale.clone().multiplyScalar(scaleChange);
+        const newScale = oldScale.multiplyScalar(scaleChange);
 
         const clamped = new Vector3(
           MathUtils.clamp(newScale.x, 0.2, 3),
