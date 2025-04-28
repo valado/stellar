@@ -111,7 +111,7 @@ export const UI: FC = () => {
             </Card>
             {isTakingLonger && (
               <Card>
-                <span className="block  text-center">
+                <span className="block text-center">
                   Das dauert länger als gewöhnlich...
                 </span>
               </Card>

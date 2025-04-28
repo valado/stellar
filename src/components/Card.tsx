@@ -10,7 +10,7 @@ export const Card: FC<Props> = ({ children, ...props }) => (
       to-neutral-800
       p-6
       border-2
-    border-neutral-700
+      border-neutral-700
       rounded-lg
     "
     {...props}
