@@ -20,7 +20,7 @@ import { ScanEffect } from "$components/ScanEffect";
 import { Card } from "$components/Card";
 import { Button } from "$components/Button";
 import { Loader } from "$components/Loader";
-import { Label } from "$components/Label";
+import { Label } from "$components/demo/house/Label";
 
 // Types
 import type { FC, MouseEventHandler } from "react";

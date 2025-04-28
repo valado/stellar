@@ -2,9 +2,9 @@ import { Suspense } from "react";
 import { Canvas } from "@react-three/fiber";
 import { IfInSessionMode, XR } from "@react-three/xr";
 import { Environment } from "@react-three/drei";
-import { UI } from "$components/UI";
+import { UI } from "$components/demo/house/UI";
 import { HitTest } from "$components/HitTest";
-import { House } from "$components/House";
+import { House } from "$components/demo/house/House";
 
 // Stores
 import { useXRSession } from "$stores/xr-session";

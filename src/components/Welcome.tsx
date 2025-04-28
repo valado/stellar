@@ -10,7 +10,11 @@ import { useXRSessionEnter } from "$hooks/xr-session";
 // Types
 import type { FC, MouseEventHandler } from "react";
 
-export const Welcome: FC = () => {
+type Props = {
+  title: string;
+};
+
+export const Welcome: FC<Props> = ({ title }) => {
   const [isXRSupported, setIsXRSupported] = useState(false);
   const [error, setError] = useState("");
 
@@ -24,7 +28,7 @@ export const Welcome: FC = () => {
         "color: #ffffff;" +
         "padding: 1em;" +
         "border-radius: 0.5em;",
-      "AR Immobilien Demo"
+      "AR Immobilien Demo",
     );
 
     checkXRSupport();
@@ -48,7 +52,7 @@ export const Welcome: FC = () => {
 
     if (!success) {
       setError(
-        "Ein Fehler ist aufgetreten. Womöglich unterstützt dieser Browser WebXR nicht."
+        "Ein Fehler ist aufgetreten. Womöglich unterstützt dieser Browser WebXR nicht.",
       );
     }
   };
@@ -61,9 +65,7 @@ export const Welcome: FC = () => {
           alt="Sopra Steria CSS Logo"
           className="max-w-72 pointer-events-none"
         />
-        <span className="text-neutral-400 text-2xl select-none">
-          AR Immobilien Demo
-        </span>
+        <span className="text-neutral-400 text-2xl select-none">{title}</span>
       </div>
 
       {isXRSupported && (
