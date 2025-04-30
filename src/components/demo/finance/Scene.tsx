@@ -29,10 +29,8 @@ export const Scene: FC = () => {
               files="/hdr/hochsal_field_1k.hdr"
               environmentRotation={[0, 0, Math.PI / 5]}
             />
-            <Float rotationIntensity={1}
-            speed={1}
-            floatIntensity={1}
-            floatingRange={[0, 1]}><Cash /></Float>
+            
+            <Earth />
           </Suspense>
         </IfInSessionMode>
       </XR>

@@ -24,7 +24,12 @@ export const House: FC = () => {
   const isPoseSet = usePose((state) => state.isPoseSet);
   const setLabelOrigin = useLabelOrigin((state) => state.setLabelOrigin);
 
-  const lastTouchDistanceRef = useRef<number | null>(null);
+  const initialTouchDistanceRef = useRef<number | null>(null);
+  const initialScaleRef = useRef<Vector3 | null>(null);
+  const isDragging = useRef(false);
+  const lastTouchX = useRef<number | null>(null);
+
+
 
   // Logic for scaling using touch gestures.
   useEffect(() => {
@@ -33,47 +38,87 @@ export const House: FC = () => {
       const dy = touches[0].clientY - touches[1].clientY;
       return Math.sqrt(dx * dx + dy * dy);
     };
-
-    const onTouchMove = (event: TouchEvent) => {
-      if (event.touches.length !== 2 || !isPoseSet) {
-        return;
+  
+    const onTouchStart = (event: TouchEvent) => {
+      if (event.touches.length === 1 && isPoseSet) {
+        // Start dragging
+        isDragging.current = true;
+        lastTouchX.current = event.touches[0].clientX;
       }
-
-      event.preventDefault();
-
-      const newDistance = getTouchDistance(event.touches);
-
-      if (lastTouchDistanceRef.current !== null) {
-        const scaleChange = newDistance / lastTouchDistanceRef.current;
-        const oldScale = scale.clone();
-        const newScale = oldScale.multiplyScalar(scaleChange);
-
+    };
+  
+    const onTouchMove = (event: TouchEvent) => {
+      if (!isPoseSet) return;
+  
+      if (event.touches.length === 2) {
+        event.preventDefault();
+        const newDistance = getTouchDistance(event.touches);
+  
+        if (initialTouchDistanceRef.current === null) {
+          initialTouchDistanceRef.current = newDistance;
+          initialScaleRef.current = scale.clone();
+          return;
+        }
+  
+        const scaleFactor = newDistance / initialTouchDistanceRef.current;
+        const baseScale = initialScaleRef.current || INITIAL_SCALE;
+  
+        const newScale = baseScale.clone().multiplyScalar(scaleFactor);
+  
         const clamped = new Vector3(
           MathUtils.clamp(newScale.x, 0.2, 3),
           MathUtils.clamp(newScale.y, 0.2, 3),
           MathUtils.clamp(newScale.z, 0.2, 3)
         );
-
+  
         setScale(clamped);
       }
-
-      lastTouchDistanceRef.current = newDistance;
+  
+      if (event.touches.length === 1 && isDragging.current && pose) {
+        // 👉 Single finger drag = rotation
+        const currentX = event.touches[0].clientX;
+        if (lastTouchX.current !== null) {
+          const deltaX = currentX - lastTouchX.current;
+          const rotationSpeed = -0.005; // Adjust sensitivity
+  
+          // Modify the pose quaternion to rotate around Y axis
+          const yRotation = new Quaternion().setFromAxisAngle(
+            new Vector3(0, 1, 0),
+            -deltaX * rotationSpeed
+          );
+  
+          const newQuaternion = pose.quaternion.clone().multiply(yRotation);
+  
+          setPose({
+            ...pose,
+            quaternion: newQuaternion,
+          });
+        }
+        lastTouchX.current = currentX;
+      }
     };
-
+  
     const onTouchEnd = () => {
-      lastTouchDistanceRef.current = null;
+      initialTouchDistanceRef.current = null;
+      initialScaleRef.current = null;
+      isDragging.current = false;
+      lastTouchX.current = null;
     };
-
+  
+    window.addEventListener("touchstart", onTouchStart, { passive: false });
     window.addEventListener("touchmove", onTouchMove, { passive: false });
+    window.addEventListener("touchend", onTouchEnd);
     window.addEventListener("touchcancel", onTouchEnd);
-    window.addEventListener("touchend", onTouchMove);
-
+  
     return () => {
+      window.removeEventListener("touchstart", onTouchStart);
       window.removeEventListener("touchmove", onTouchMove);
+      window.removeEventListener("touchend", onTouchEnd);
       window.removeEventListener("touchcancel", onTouchEnd);
-      window.removeEventListener("touchend", onTouchMove);
     };
-  }, [isPoseSet, scale]);
+  }, [isPoseSet, pose, scale, setPose]);
+  
+  
 
   // Logic for placing the house model at the selected location.
   useXRInputSourceEvent(
