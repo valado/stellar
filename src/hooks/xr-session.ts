@@ -1,3 +1,4 @@
+import { useCashMultiplier } from "$stores/cash-multiplier";
 import { useHits } from "$stores/hits";
 import { useLabelOrigin } from "$stores/label-origin";
 import { usePose } from "$stores/pose";
@@ -10,6 +11,7 @@ export const useXRSessionEnter = () => {
   const resetPose = usePose((state) => state.resetPose);
   const resetHits = useHits((state) => state.resetHits);
   const resetLabelOrigin = useLabelOrigin((state) => state.resetLabelOrigin);
+  const resetMultiplier = useCashMultiplier((state) => state.resetMultiplier);
 
   return async () => {
     if (isInAR) {
@@ -28,6 +30,7 @@ export const useXRSessionEnter = () => {
         resetHits();
         resetPose();
         resetLabelOrigin();
+        resetMultiplier();
         setIsInAR(false);
         console.log("[Session]", "Ending current AR session.");
       });

@@ -1,29 +1,26 @@
-import { useEffect, useRef, useState } from "react";
-import { Vector3, Quaternion, MathUtils } from "three";
-import { useFrame } from "@react-three/fiber";
 import { useXRInputSourceEvent } from "@react-three/xr";
-
-// Components
-import { Gltf } from "@react-three/drei";
+import { Quaternion, Vector3 } from "three";
 
 // Stores
+import { useCashMultiplier } from "$stores/cash-multiplier";
 import { useHits } from "$stores/hits";
 import { usePose } from "$stores/pose";
-import { useLabelOrigin } from "$stores/label-origin";
+
+// Components
+import { Suspense } from "react";
+import { Gltf } from "@react-three/drei";
 
 // Types
 import type { FC } from "react";
-
-const INITIAL_SCALE = new Vector3(0.3, 0.3, 0.3);
 
 export const Cash: FC = () => {
   const hits = useHits((state) => state.hits);
   const pose = usePose((state) => state.pose);
   const setPose = usePose((state) => state.setPose);
   const isPoseSet = usePose((state) => state.isPoseSet);
-  const setLabelOrigin = useLabelOrigin((state) => state.setLabelOrigin);
-  
-  // Logic for placing the house model at the selected location.
+  const multiplier = useCashMultiplier((state) => state.multiplier);
+
+  // Logic for placing the cash model at the selected location.
   useXRInputSourceEvent(
     "all",
     "select",
@@ -48,26 +45,25 @@ export const Cash: FC = () => {
         quaternion,
       });
     },
-    [isPoseSet, hits]
+    [isPoseSet, hits],
   );
 
-  // Logic for determining the label origin.
-  useFrame(({ camera }) => {
-    if (!pose) {
-      return;
-    }
-
-    camera.updateMatrixWorld(true);
-    setLabelOrigin(pose.position.clone().project(camera));
-  });
-
   return isPoseSet ? (
-    <group
-      {...pose}
-      rotation={[0, -Math.PI / 2, 0]}
-      dispose={null}
-    >
-      <Gltf src="/models/10_racks.glb" />
-    </group>
+    <Suspense fallback={null}>
+      <group {...pose} dispose={null}>
+        {new Array(multiplier).fill(null).map((_, i) => (
+          <Gltf
+            key={i}
+            src="/models/10_racks.glb"
+            // Achtung: Magic Numbers!
+            position={[
+              (i % 5) / 6,
+              Math.floor((i / 5) % 5) / 40,
+              Math.floor(i / 25) / 12,
+            ]}
+          />
+        ))}
+      </group>
+    </Suspense>
   ) : null;
 };
