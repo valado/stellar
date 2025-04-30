@@ -16,7 +16,7 @@ import { useLabelOrigin } from "$stores/label-origin";
 // Types
 import type { FC } from "react";
 
-const INITIAL_SCALE = new Vector3(0.3, 0.3, 0.3);
+const INITIAL_SCALE = new Vector3(1.2, 1.2, 1.2);
 
 export const Earth: FC = () => {
   const [isPlaced, setIsPlaced] = useState(false);
@@ -32,6 +32,9 @@ export const Earth: FC = () => {
   const isDragging = useRef(false);
   const lastTouch = useRef<{ x: number; y: number } | null>(null);
   const cameraRef = useRef<THREE.Camera | null>(null);
+  const [autoAnimate, setAutoAnimate] = useState(true);
+  const earthGroupRef = useRef<THREE.Group>(null); // Add this for controlling transform
+
 
 
   
@@ -76,6 +79,8 @@ export const Earth: FC = () => {
       if (!pose) return;
   
       if (e.touches.length === 2) {
+        setAutoAnimate(false); // Stops auto float/rotation
+
         // Pinch to scale
         const distance = getTouchDistance(e.touches);
         if (initialTouchDistanceRef.current === null) {
@@ -98,6 +103,8 @@ export const Earth: FC = () => {
       }
   
       if (e.touches.length === 1 && isDragging.current) {
+        setAutoAnimate(false); // Stops auto float/rotation
+
         const { clientX, clientY } = e.touches[0];
         const last = lastTouch.current;
   
@@ -154,9 +161,19 @@ export const Earth: FC = () => {
     }
   });
 
+  useFrame((_, delta) => {
+    if (!autoAnimate || !earthGroupRef.current) return;
+  
+    const t = performance.now() * 0.001;
+    earthGroupRef.current.position.y = pose!.position.y + Math.sin(t * 0.5) * 0.05;
+    earthGroupRef.current.rotation.y += delta * 0.1;
+  });
+  
+
   return pose ? (
     <group
       {...pose}
+      ref={earthGroupRef} // 👈 here!
       scale={scale}
       rotation={[0, -Math.PI / 2, 0]}
       dispose={null}
