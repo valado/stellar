@@ -7,36 +7,23 @@ import { useFrame } from "@react-three/fiber";
 import { useHits } from "$stores/hits";
 
 // Types
-import type { FC, RefObject } from "react";
+import type { FC } from "react";
 import type { Mesh } from "three";
 
-type CrosshairMeshProps = {
-  ref: RefObject<Mesh>;
-  isVisible: boolean;
-};
-
-type CrosshairProps = {
+type Props = {
   handedness: XRHandedness;
 };
 
-const CrosshairMesh: FC<CrosshairMeshProps> = ({ ref, isVisible }) => {
-  const geometry = BufferGeometryUtils.mergeGeometries([
-    new RingGeometry(0.05, 0.05, 30),
-    new CircleGeometry(0.007, 12),
-  ]).rotateX(-Math.PI / 2);
-
-  return (
-    <mesh geometry={geometry} ref={ref} visible={isVisible}>
-      <meshBasicMaterial color="white" />
-    </mesh>
-  );
-};
-
-export const Crosshair: FC<CrosshairProps> = memo(({ handedness }) => {
+export const Crosshair: FC<Props> = memo(({ handedness }) => {
   const [isVisible, setIsVisible] = useState(false);
   const hits = useHits((state) => state.hits);
 
   const meshRef = useRef<Mesh>(null!);
+
+  const geometry = BufferGeometryUtils.mergeGeometries([
+    new RingGeometry(0.05, 0.05, 30),
+    new CircleGeometry(0.007, 12),
+  ]).rotateX(-Math.PI / 2);
 
   useFrame(() => {
     const mesh = meshRef.current;
@@ -58,5 +45,9 @@ export const Crosshair: FC<CrosshairProps> = memo(({ handedness }) => {
     setIsVisible(true);
   });
 
-  return <CrosshairMesh ref={meshRef} isVisible={isVisible} />;
+  return (
+    <mesh geometry={geometry} ref={meshRef} visible={isVisible}>
+      <meshBasicMaterial color="white" />
+    </mesh>
+  );
 });
