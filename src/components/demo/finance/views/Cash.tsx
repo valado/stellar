@@ -54,7 +54,7 @@ export const Cash: FC = () => {
         {new Array(multiplier).fill(null).map((_, i) => (
           <Gltf
             key={i}
-            src="/models/10_racks.glb"
+            src="/models/cash.glb"
             // Achtung: Magic Numbers!
             position={[
               (i % 5) / 6,
