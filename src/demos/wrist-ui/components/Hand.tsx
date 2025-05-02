@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import { XRHandModel } from "@react-three/xr";
-import { UI } from "$demos/watch/components/UI";
+import { UI } from "$demos/wrist-ui/components/UI";
 
 // Types
 import type { FC } from "react";

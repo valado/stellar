@@ -4,7 +4,7 @@ import { useXRSession } from "$stores/xr-session";
 import { Suspense } from "react";
 import { Canvas } from "@react-three/fiber";
 import { XR, IfInSessionMode } from "@react-three/xr";
-import { UI } from "$demos/watch/components/UI";
+import { UI } from "$demos/wrist-ui/components/UI";
 
 // Types
 import type { FC } from "react";
