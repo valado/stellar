@@ -31,6 +31,13 @@ const router = createBrowserRouter([
           Component: async () => createDemo(await import("$demos/house/Demo")),
         },
       },
+      {
+        path: "wrist-ui",
+        lazy: {
+          Component: async () =>
+            createDemo(await import("$demos/wrist-ui/Demo")),
+        },
+      },
     ],
   },
 ]);
@@ -38,5 +45,5 @@ const router = createBrowserRouter([
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <RouterProvider router={router} />
-  </StrictMode>
+  </StrictMode>,
 );
