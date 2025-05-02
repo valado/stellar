@@ -1,10 +1,8 @@
 import { useMemo } from "react";
+import { useLabelOrigin } from "$demos/house/stores/label-origin";
 
 // Components
 import { Card } from "$components/Card";
-
-// Stores
-import { useLabelOrigin } from "$stores/label-origin";
 
 // Types
 import type { FC } from "react";
@@ -37,7 +35,7 @@ export const Label: FC<Props> = ({ title, body, offsetX = 0, offsetY = 0 }) => {
     const y = (-(labelOrigin.y * h) + h) | 0;
     const z = labelOrigin.z;
 
-    const scale = 1 - z;
+    const scale = (1 - z) * 5;
     const opacity = z > 0.86 ? 1 : Math.max(0, (z - 0.7) | 0);
 
     return {
@@ -59,9 +57,11 @@ export const Label: FC<Props> = ({ title, body, offsetX = 0, offsetY = 0 }) => {
       style={{
         top: `${y + offsetY}px`,
         left: `${x + offsetX}px`,
+        opacity,
+        scale,
       }}
     >
-      <Card style={{ opacity, scale: scale * 5 }}>
+      <Card>
         <div className="flex flex-col gap-0.5 min-w-48">
           <span className="font-bold">{title}</span>
           <span className="text-neutral-400">{body}</span>

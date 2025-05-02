@@ -1,5 +1,5 @@
 import { useXRInputSourceStateContext } from "@react-three/xr";
-import { useOnHit } from "$hooks/hits";
+import { useOnHit } from "$hooks/on-hit";
 
 // Components
 import {

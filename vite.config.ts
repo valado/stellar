@@ -23,6 +23,14 @@ export default defineConfig({
         replacement: new URL("src/components", import.meta.url).pathname,
       },
       {
+        find: "$demos",
+        replacement: new URL("src/demos", import.meta.url).pathname,
+      },
+      {
+        find: "$factories",
+        replacement: new URL("src/factories", import.meta.url).pathname,
+      },
+      {
         find: "$hooks",
         replacement: new URL("src/hooks", import.meta.url).pathname,
       },

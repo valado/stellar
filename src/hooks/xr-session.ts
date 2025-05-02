@@ -1,71 +1,64 @@
-import { useCashMultiplier } from "$stores/cash-multiplier";
-import { useHits } from "$stores/hits";
-import { useLabelOrigin } from "$stores/label-origin";
-import { usePose } from "$stores/pose";
 import { useXRSession } from "$stores/xr-session";
 
-export const useXRSessionEnter = () => {
-  const store = useXRSession((state) => state.store);
-  const isInAR = useXRSession((state) => state.isInAR);
-  const setIsInAR = useXRSession((state) => state.setIsInAR);
-  const resetPose = usePose((state) => state.resetPose);
-  const resetHits = useHits((state) => state.resetHits);
-  const resetLabelOrigin = useLabelOrigin((state) => state.resetLabelOrigin);
-  const resetMultiplier = useCashMultiplier((state) => state.resetMultiplier);
+// Types
+import { MouseEventHandler } from "react";
 
-  return async () => {
-    if (isInAR) {
-      return false;
+export const useEnterXR = (
+  mode: Exclude<XRSessionMode, "inline">,
+  onExit: () => void
+): MouseEventHandler<HTMLButtonElement> => {
+  const setIsActiveSession = useXRSession((state) => state.setIsActiveSession);
+  const isActiveSession = useXRSession((state) => state.isActiveSession);
+  const xrStore = useXRSession((state) => state.xrStore);
+
+  return async (event) => {
+    event.stopPropagation();
+
+    if (isActiveSession) {
+      return;
     }
 
     try {
-      const session = await store.enterAR();
+      const session = await (mode === "immersive-ar"
+        ? xrStore.enterAR()
+        : xrStore.enterVR());
 
       if (!session) {
-        console.error("[Session]", "Failed to start session.");
-        return false;
+        return;
       }
 
       session.addEventListener("end", () => {
-        resetHits();
-        resetPose();
-        resetLabelOrigin();
-        resetMultiplier();
-        setIsInAR(false);
-        console.log("[Session]", "Ending current AR session.");
+        onExit();
+        setIsActiveSession(false);
       });
-
-      setIsInAR(true);
-      console.log("[Session]", "Starting new AR session.");
-      return true;
-    } catch (error) {
-      console.error("[Session]", "Failed to start session.", error);
-      return false;
+    } catch (e) {
+      console.error(e);
+      return;
     }
+
+    setIsActiveSession(true);
   };
 };
 
-export const useXRSessionEnd = () => {
-  const store = useXRSession((state) => state.store);
-  const isInAR = useXRSession((state) => state.isInAR);
+export const useExitXR = (): MouseEventHandler<HTMLButtonElement> => {
+  const isActiveSession = useXRSession((state) => state.isActiveSession);
+  const xrStore = useXRSession((state) => state.xrStore);
 
-  return async () => {
-    if (!isInAR) {
-      return false;
+  return async (event) => {
+    event.stopPropagation();
+
+    if (!isActiveSession) {
+      return;
     }
 
-    const { session } = store.getState();
+    const { session } = xrStore.getState();
 
     if (!session) {
-      return false;
+      return;
     }
 
     try {
       await session.end();
-      return true;
-    } catch (error) {
-      console.error("[Session]", "Failed to end session.", error);
-      return false;
-    }
+    } catch {}
   };
 };

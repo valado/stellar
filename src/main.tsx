@@ -1,14 +1,42 @@
 import { createRoot } from "react-dom/client";
+import { createBrowserRouter } from "react-router";
+import { createDemo } from "$factories/demo";
 
 // Components
 import { StrictMode } from "react";
-import { App } from "./App";
+import { RouterProvider } from "react-router";
 
 // CSS
 import "./index.css";
 
+const router = createBrowserRouter([
+  {
+    path: "demos",
+    children: [
+      {
+        path: "cash",
+        lazy: {
+          Component: async () => createDemo(await import("$demos/cash/Demo")),
+        },
+      },
+      {
+        path: "earth",
+        lazy: {
+          Component: async () => createDemo(await import("$demos/earth/Demo")),
+        },
+      },
+      {
+        path: "house",
+        lazy: {
+          Component: async () => createDemo(await import("$demos/house/Demo")),
+        },
+      },
+    ],
+  },
+]);
+
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <App />
-  </StrictMode>,
+    <RouterProvider router={router} />
+  </StrictMode>
 );

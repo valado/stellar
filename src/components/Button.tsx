@@ -1,7 +1,6 @@
 import type { FC, MouseEventHandler, PropsWithChildren } from "react";
 
 type Props = PropsWithChildren<{
-  isDisabled?: boolean;
   onClick?: MouseEventHandler<HTMLButtonElement>;
 }>;
 
@@ -15,7 +14,7 @@ export const Button: FC<Props> = ({ onClick, children }) => (
       to-neutral-800
       p-4
       border-2
-    border-neutral-700
+      border-neutral-700
       rounded-lg
       before:hidden
       active:before:block

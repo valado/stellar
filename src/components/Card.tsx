@@ -1,10 +1,9 @@
-import type { FC, HTMLProps, PropsWithChildren } from "react";
+import type { FC, PropsWithChildren } from "react";
 
-type Props = PropsWithChildren<HTMLProps<HTMLDivElement>>;
-
-export const Card: FC<Props> = ({ children, ...props }) => (
+export const Card: FC<PropsWithChildren> = ({ children }) => (
   <div
     className="
+      relative
       bg-gradient-to-br
       from-neutral-500
       to-neutral-800
@@ -13,7 +12,6 @@ export const Card: FC<Props> = ({ children, ...props }) => (
       border-neutral-700
       rounded-lg
     "
-    {...props}
   >
     {children}
   </div>

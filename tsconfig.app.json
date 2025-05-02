@@ -26,6 +26,8 @@
     "baseUrl": "src",
     "paths": {
       "$components/*": ["components/*"],
+      "$demos/*": ["demos/*"],
+      "$factories/*": ["factories/*"],
       "$hooks/*": ["hooks/*"],
       "$stores/*": ["stores/*"]
     }

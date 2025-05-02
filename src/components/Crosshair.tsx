@@ -2,8 +2,6 @@ import { memo, useRef, useState } from "react";
 import { RingGeometry, CircleGeometry } from "three";
 import { BufferGeometryUtils } from "three/examples/jsm/Addons.js";
 import { useFrame } from "@react-three/fiber";
-
-// Stores
 import { useHits } from "$stores/hits";
 
 // Types

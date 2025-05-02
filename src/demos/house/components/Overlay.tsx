@@ -1,10 +1,8 @@
 import { useEffect, useRef, useState } from "react";
-import { useXRSessionEnd } from "$hooks/xr-session";
-
-// Stores
+import { useExitXR } from "$hooks/xr-session";
 import { usePose } from "$stores/pose";
 import { useHits } from "$stores/hits";
-import { useLabelOrigin } from "$stores/label-origin";
+import { useLabelOrigin } from "$demos/house/stores/label-origin";
 
 // Components
 import { XRDomOverlay } from "@react-three/xr";
@@ -16,28 +14,29 @@ import {
   RulerDimensionLineIcon,
   XIcon,
 } from "lucide-react";
-import { ScanEffect } from "$components/ScanEffect";
-import { Card } from "$components/Card";
 import { Button } from "$components/Button";
+import { Card } from "$components/Card";
+import { ScanEffect } from "$components/ScanEffect";
 import { Loader } from "$components/Loader";
-import { Label } from "$components/demo/house/Label";
+import { Label } from "$demos/house/components/Label";
 
 // Types
 import type { FC, MouseEventHandler } from "react";
 
-export const UI: FC = () => {
+export const Overlay: FC = () => {
   const [areLabelsHidden, setAreLabelsHidden] = useState(false);
   const [isFinancialLabels, setIsFinancialLabels] = useState(true);
   const [isTakingLonger, setIsTakingLonger] = useState(false);
-  const isPoseSet = usePose((state) => state.isPoseSet);
   const hits = useHits((state) => state.hits);
+  const pose = usePose((state) => state.pose);
+
   const resetPose = usePose((state) => state.resetPose);
   const resetHits = useHits((state) => state.resetHits);
   const resetLabelOrigin = useLabelOrigin((state) => state.resetLabelOrigin);
 
-  const endSession = useXRSessionEnd();
-
   const timeoutRef = useRef<ReturnType<typeof setTimeout>>(null!);
+
+  const exitXR = useExitXR();
 
   useEffect(() => {
     if (Object.keys(hits).length === 0) {
@@ -53,45 +52,30 @@ export const UI: FC = () => {
     };
   }, [hits]);
 
-  const exitAR: MouseEventHandler = async (event) => {
-    event.stopPropagation();
-    await endSession();
-  };
-
-  const reset: MouseEventHandler = (event) => {
+  const reset: MouseEventHandler<HTMLButtonElement> = (event) => {
     event.stopPropagation();
     resetHits();
     resetPose();
     resetLabelOrigin();
   };
 
-  const toggleFinancialLabels: MouseEventHandler = (event) => {
-    event.stopPropagation();
-    setIsFinancialLabels(!isFinancialLabels);
-  };
-
-  const toggleLabels: MouseEventHandler = (event) => {
-    event.stopPropagation();
-    setAreLabelsHidden(!areLabelsHidden);
-  };
-
   return (
     <XRDomOverlay className="relative min-h-dvh">
-      <div className="absolute top-4 left-4 z-10">
-        <Button onClick={exitAR}>
+      <div className="absolute top-4 left-4">
+        <Button onClick={exitXR}>
           <XIcon />
         </Button>
       </div>
 
-      {isPoseSet && (
+      {pose && (
         <div className="absolute flex flex-col gap-4 bottom-4 right-4 z-10">
           <Button onClick={reset}>
             <RotateCcwIcon />
           </Button>
-          <Button onClick={toggleFinancialLabels}>
+          <Button onClick={() => setIsFinancialLabels(!isFinancialLabels)}>
             {isFinancialLabels ? <EuroIcon /> : <RulerDimensionLineIcon />}
           </Button>
-          <Button onClick={toggleLabels}>
+          <Button onClick={() => setAreLabelsHidden(!areLabelsHidden)}>
             {areLabelsHidden ? <EyeClosedIcon /> : <EyeIcon />}
           </Button>
         </div>
@@ -112,7 +96,7 @@ export const UI: FC = () => {
             {isTakingLonger && (
               <Card>
                 <span className="block text-center">
-                  Das dauert länger als gewöhnlich...
+                  Keine Fläche erkannt. Bitte schaue Dich weiterhin um.
                 </span>
               </Card>
             )}
@@ -120,27 +104,23 @@ export const UI: FC = () => {
         </>
       )}
 
-      {isPoseSet &&
-        !areLabelsHidden &&
-        (isFinancialLabels ? (
-          <>
-            <Label title="Immobilienwert" body="€ 2.650.000" offsetX={-100} />
-            <Label
-              title="Mtl. Hypothekenzahlung"
-              body="€ 6.100"
-              offsetX={100}
-            />
-            <Label title="Zinssatz" body="2%" offsetY={-100} />
-            <Label title="Laufzeit" body="30 Jahre" offsetY={100} />
-          </>
-        ) : (
-          <>
-            <Label title="Lage" body="München-Grünwald" offsetX={-100} />
-            <Label title="Grundfläche" body="200 qm" offsetX={100} />
-            <Label title="Etagen" body="2" offsetY={-100} />
-            <Label title="Energie-Effizienz" body="B" offsetY={100} />
-          </>
-        ))}
+      {pose && !areLabelsHidden && isFinancialLabels && (
+        <>
+          <Label title="Immobilienwert" body="€ 2.650.000" offsetX={-100} />
+          <Label title="Mtl. Hypothekenzahlung" body="€ 6.100" offsetX={100} />
+          <Label title="Zinssatz" body="2%" offsetY={-100} />
+          <Label title="Laufzeit" body="30 Jahre" offsetY={100} />
+        </>
+      )}
+
+      {pose && !areLabelsHidden && !isFinancialLabels && (
+        <>
+          <Label title="Lage" body="München-Grünwald" offsetX={-100} />
+          <Label title="Grundfläche" body="200 qm" offsetX={100} />
+          <Label title="Etagen" body="2" offsetY={-100} />
+          <Label title="Energie-Effizienz" body="B" offsetY={100} />
+        </>
+      )}
     </XRDomOverlay>
   );
 };

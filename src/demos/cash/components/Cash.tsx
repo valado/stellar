@@ -1,10 +1,8 @@
-import { useXRInputSourceEvent } from "@react-three/xr";
 import { Quaternion, Vector3 } from "three";
-
-// Stores
-import { useCashMultiplier } from "$stores/cash-multiplier";
+import { useXRInputSourceEvent } from "@react-three/xr";
 import { useHits } from "$stores/hits";
 import { usePose } from "$stores/pose";
+import { useCashMultiplier } from "$demos/cash/stores/cash-multiplier";
 
 // Components
 import { Suspense } from "react";
@@ -17,15 +15,14 @@ export const Cash: FC = () => {
   const hits = useHits((state) => state.hits);
   const pose = usePose((state) => state.pose);
   const setPose = usePose((state) => state.setPose);
-  const isPoseSet = usePose((state) => state.isPoseSet);
-  const multiplier = useCashMultiplier((state) => state.multiplier);
+  const cashMultiplier = useCashMultiplier((state) => state.cashMultiplier);
 
-  // Logic for placing the cash model at the selected location.
+  // Logic for placing the house model at the selected location.
   useXRInputSourceEvent(
     "all",
     "select",
     (event) => {
-      if (isPoseSet) {
+      if (pose) {
         return;
       }
 
@@ -45,25 +42,28 @@ export const Cash: FC = () => {
         quaternion,
       });
     },
-    [isPoseSet, hits],
+    [pose, hits]
   );
 
-  return isPoseSet ? (
-    <Suspense fallback={null}>
-      <group {...pose} dispose={null}>
-        {new Array(multiplier).fill(null).map((_, i) => (
+  if (!pose || cashMultiplier === 0) {
+    return null;
+  }
+
+  return (
+    <group {...pose} dispose={null}>
+      <Suspense>
+        {new Array(cashMultiplier).fill(undefined).map((_, i) => (
           <Gltf
             key={i}
             src="/models/cash.glb"
-            // Achtung: Magic Numbers!
             position={[
               (i % 5) / 6,
-              Math.floor((i / 5) % 5) / 40,
-              Math.floor(i / 25) / 12,
+              ((i / 5) % 5 | 0) / 40,
+              ((i / 25) | 0) / 12,
             ]}
           />
         ))}
-      </group>
-    </Suspense>
-  ) : null;
+      </Suspense>
+    </group>
+  );
 };

@@ -11,7 +11,7 @@ export const useOnHit = () => {
     results: XRHitTestResult[],
     getWorldMatrix: (target: Matrix4, hit: XRHitTestResult) => void
   ) => {
-    if (results.length === 0) {
+    if (!results.length) {
       return;
     }
 

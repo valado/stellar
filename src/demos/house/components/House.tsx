@@ -1,131 +1,127 @@
 import { useEffect, useRef, useState } from "react";
-import { Vector3, Quaternion, MathUtils } from "three";
+import { MathUtils, Quaternion, Vector3 } from "three";
 import { useFrame } from "@react-three/fiber";
 import { useXRInputSourceEvent } from "@react-three/xr";
+import { useHits } from "$stores/hits";
+import { usePose } from "$stores/pose";
+import { useLabelOrigin } from "$demos/house/stores/label-origin";
 
 // Components
 import { Gltf } from "@react-three/drei";
-
-// Stores
-import { useHits } from "$stores/hits";
-import { usePose } from "$stores/pose";
-import { useLabelOrigin } from "$stores/label-origin";
 
 // Types
 import type { FC } from "react";
 
 const INITIAL_SCALE = new Vector3(0.3, 0.3, 0.3);
 
+const getTouchDistance = (touches: TouchList) => {
+  const dx = touches[0].clientX - touches[1].clientX;
+  const dy = touches[0].clientY - touches[1].clientY;
+  return Math.sqrt(dx * dx + dy * dy);
+};
+
 export const House: FC = () => {
-  const [scale, setScale] = useState<Vector3>(INITIAL_SCALE);
+  const [scale, setScale] = useState(INITIAL_SCALE);
   const hits = useHits((state) => state.hits);
   const pose = usePose((state) => state.pose);
   const setPose = usePose((state) => state.setPose);
-  const isPoseSet = usePose((state) => state.isPoseSet);
   const setLabelOrigin = useLabelOrigin((state) => state.setLabelOrigin);
 
-  const initialTouchDistanceRef = useRef<number | null>(null);
-  const initialScaleRef = useRef<Vector3 | null>(null);
-  const isDragging = useRef(false);
-  const lastTouchX = useRef<number | null>(null);
+  const isDraggingRef = useRef<boolean>(false);
+  const lastTouchXRef = useRef<number | null>(null);
+  const touchDistanceRef = useRef<number | null>(null);
+  const scaleRef = useRef<Vector3 | null>(null);
 
-
-
-  // Logic for scaling using touch gestures.
+  // Logic for custom touch gestures.
   useEffect(() => {
-    const getTouchDistance = (touches: TouchList): number => {
-      const dx = touches[0].clientX - touches[1].clientX;
-      const dy = touches[0].clientY - touches[1].clientY;
-      return Math.sqrt(dx * dx + dy * dy);
-    };
-  
     const onTouchStart = (event: TouchEvent) => {
-      if (event.touches.length === 1 && isPoseSet) {
-        // Start dragging
-        isDragging.current = true;
-        lastTouchX.current = event.touches[0].clientX;
+      if (event.touches.length === 1 && pose) {
+        isDraggingRef.current = true;
+        lastTouchXRef.current = event.touches[0].clientX;
       }
     };
-  
+
     const onTouchMove = (event: TouchEvent) => {
-      if (!isPoseSet) return;
-  
-      if (event.touches.length === 2) {
+      if (!pose) {
+        return;
+      }
+
+      // Handle scaling.
+      if (event.touches.length === 2 && pose) {
         event.preventDefault();
         const newDistance = getTouchDistance(event.touches);
-  
-        if (initialTouchDistanceRef.current === null) {
-          initialTouchDistanceRef.current = newDistance;
-          initialScaleRef.current = scale.clone();
+
+        if (!touchDistanceRef.current) {
+          touchDistanceRef.current = newDistance;
+          scaleRef.current = scale.clone();
           return;
         }
-  
-        const scaleFactor = newDistance / initialTouchDistanceRef.current;
-        const baseScale = initialScaleRef.current || INITIAL_SCALE;
-  
-        const newScale = baseScale.clone().multiplyScalar(scaleFactor);
-  
+
+        const scaleFactor = newDistance / touchDistanceRef.current;
+
+        const oldScale = scaleRef.current || INITIAL_SCALE;
+        const newScale = oldScale.multiplyScalar(scaleFactor);
+
         const clamped = new Vector3(
           MathUtils.clamp(newScale.x, 0.2, 3),
           MathUtils.clamp(newScale.y, 0.2, 3),
           MathUtils.clamp(newScale.z, 0.2, 3)
         );
-  
+
         setScale(clamped);
       }
-  
-      if (event.touches.length === 1 && isDragging.current && pose) {
-        // 👉 Single finger drag = rotation
+
+      // Handle rotation.
+      if (event.touches.length === 1 && isDraggingRef.current && pose) {
         const currentX = event.touches[0].clientX;
-        if (lastTouchX.current !== null) {
-          const deltaX = currentX - lastTouchX.current;
-          const rotationSpeed = -0.005; // Adjust sensitivity
-  
-          // Modify the pose quaternion to rotate around Y axis
+
+        if (lastTouchXRef.current !== null) {
+          const deltaX = currentX - lastTouchXRef.current;
+          const rotationSpeed = -0.005;
+
           const yRotation = new Quaternion().setFromAxisAngle(
             new Vector3(0, 1, 0),
             -deltaX * rotationSpeed
           );
-  
+
           const newQuaternion = pose.quaternion.clone().multiply(yRotation);
-  
+
           setPose({
             ...pose,
             quaternion: newQuaternion,
           });
         }
-        lastTouchX.current = currentX;
+
+        lastTouchXRef.current = currentX;
       }
     };
-  
+
     const onTouchEnd = () => {
-      initialTouchDistanceRef.current = null;
-      initialScaleRef.current = null;
-      isDragging.current = false;
-      lastTouchX.current = null;
+      isDraggingRef.current = false;
+      lastTouchXRef.current = null;
+      touchDistanceRef.current = null;
+      scaleRef.current = null;
     };
-  
+
     window.addEventListener("touchstart", onTouchStart, { passive: false });
     window.addEventListener("touchmove", onTouchMove, { passive: false });
     window.addEventListener("touchend", onTouchEnd);
     window.addEventListener("touchcancel", onTouchEnd);
-  
+
     return () => {
       window.removeEventListener("touchstart", onTouchStart);
       window.removeEventListener("touchmove", onTouchMove);
       window.removeEventListener("touchend", onTouchEnd);
       window.removeEventListener("touchcancel", onTouchEnd);
     };
-  }, [isPoseSet, pose, scale, setPose]);
-  
-  
+  }, [pose, scale]);
 
   // Logic for placing the house model at the selected location.
   useXRInputSourceEvent(
     "all",
     "select",
     (event) => {
-      if (isPoseSet) {
+      if (pose) {
         return;
       }
 
@@ -145,7 +141,7 @@ export const House: FC = () => {
         quaternion,
       });
     },
-    [isPoseSet, hits]
+    [pose, hits]
   );
 
   // Logic for determining the label origin.
@@ -158,14 +154,17 @@ export const House: FC = () => {
     setLabelOrigin(pose.position.clone().project(camera));
   });
 
-  return isPoseSet ? (
-    <group
+  if (!pose) {
+    return null;
+  }
+
+  return (
+    <Gltf
+      src="/models/house.glb"
       {...pose}
-      rotation={[0, -Math.PI / 2, 0]}
+      rotation={[0, MathUtils.degToRad(-90), 0]}
       scale={scale}
       dispose={null}
-    >
-      <Gltf src="/models/house.glb" />
-    </group>
-  ) : null;
+    />
+  );
 };

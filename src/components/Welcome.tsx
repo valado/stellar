@@ -1,87 +1,33 @@
-import { useEffect, useState } from "react";
+import { useXRSession } from "$stores/xr-session";
 
 // Components
-import { Card } from "$components/Card";
 import { Button } from "$components/Button";
-
-// Hooks
-import { useXRSessionEnter } from "$hooks/xr-session";
 
 // Types
 import type { FC, MouseEventHandler } from "react";
 
 type Props = {
   title: string;
+  onEnterXR: MouseEventHandler<HTMLButtonElement>;
 };
 
-export const Welcome: FC<Props> = ({ title }) => {
-  const [isXRSupported, setIsXRSupported] = useState(false);
-  const [error, setError] = useState("");
+export const Welcome: FC<Props> = ({ title, onEnterXR: enterXR }) => {
+  const isActiveSession = useXRSession((state) => state.isActiveSession);
 
-  const startSession = useXRSessionEnter();
-
-  useEffect(() => {
-    console.clear();
-    console.log(
-      "%cSopra Steria",
-      "background: linear-gradient(314deg, #de1924, #f67300);" +
-        "color: #ffffff;" +
-        "padding: 1em;" +
-        "border-radius: 0.5em;",
-      "AR Immobilien Demo",
-    );
-
-    checkXRSupport();
-  }, []);
-
-  const checkXRSupport = async () => {
-    const isSupported =
-      !!navigator.xr && (await navigator.xr.isSessionSupported("immersive-ar"));
-
-    setIsXRSupported(isSupported);
-
-    if (!isSupported) {
-      setError("Leider unterstützt dieser Browser WebXR nicht.");
-    }
-  };
-
-  const enterAR: MouseEventHandler = async (event) => {
-    event.stopPropagation();
-
-    const success = await startSession();
-
-    if (!success) {
-      setError(
-        "Ein Fehler ist aufgetreten. Womöglich unterstützt dieser Browser WebXR nicht.",
-      );
-    }
-  };
+  if (isActiveSession) {
+    return null;
+  }
 
   return (
-    <div className="absolute top-0 left-0 grid place-content-center gap-20 w-full min-h-dvh">
-      <div className="grid place-content-center gap-2 text-center">
+    <div className="absolute top-0 left-0 grid place-content-center gap-16 w-full h-full p-8 pb-24">
+      <div className="flex flex-col items-center gap-2">
         <img
           src="/logo.png"
-          alt="Sopra Steria CSS Logo"
-          className="max-w-72 pointer-events-none"
+          alt="Sopra Steria Custom Software Solutions Logo"
         />
-        <span className="text-neutral-400 text-2xl select-none">{title}</span>
+        <h1 className="text-lg">{title}</h1>
       </div>
-
-      {isXRSupported && (
-        <Button onClick={enterAR}>
-          <span className="block px-3 py-2">AR-Umgebung starten</span>
-        </Button>
-      )}
-
-      {error && (
-        <Card>
-          <div className="flex flex-col gap-2 max-w-64">
-            <span className="text-xl">Entschuldigung</span>
-            <span className="text-neutral-400">{error}</span>
-          </div>
-        </Card>
-      )}
+      <Button onClick={enterXR}>AR-Umgebung starten</Button>
     </div>
   );
 };

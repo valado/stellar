@@ -10,18 +10,12 @@ type Pose = {
 
 type PoseState = {
   pose: Pose | null;
-  isPoseSet: boolean;
   setPose: (pose: Pose) => void;
   resetPose: () => void;
 };
 
 export const usePose = create<PoseState>((set) => ({
   pose: null,
-  isPoseSet: false,
-  setPose: (pose) =>
-    set({
-      isPoseSet: true,
-      pose,
-    }),
-  resetPose: () => set({ isPoseSet: false, pose: null }),
+  setPose: (pose) => set({ pose }),
+  resetPose: () => set({ pose: null }),
 }));
