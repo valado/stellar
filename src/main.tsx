@@ -5,11 +5,16 @@ import { createDemo } from "$factories/demo";
 // Components
 import { StrictMode } from "react";
 import { RouterProvider } from "react-router";
+import { Demos } from "$components/Demos";
 
 // CSS
 import "./index.css";
 
 const router = createBrowserRouter([
+  {
+    path: "",
+    Component: Demos,
+  },
   {
     path: "demos",
     children: [
