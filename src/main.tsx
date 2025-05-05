@@ -40,6 +40,10 @@ const router = createBrowserRouter([
       },
     ],
   },
+  {
+    path: "*",
+    Component: null,
+  },
 ]);
 
 createRoot(document.getElementById("root")!).render(
