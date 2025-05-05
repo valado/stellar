@@ -8,8 +8,13 @@ import { RouterProvider } from "react-router";
 
 // CSS
 import "./index.css";
+import { MainPage } from "$components/MainPage";
 
 const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <MainPage />,
+  },
   {
     path: "demos",
     children: [
