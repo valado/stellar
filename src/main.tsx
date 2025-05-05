@@ -19,6 +19,13 @@ const router = createBrowserRouter([
     path: "demos",
     children: [
       {
+        path: "candlesticks",
+        lazy: {
+          Component: async () =>
+            createDemo(await import("$demos/candlesticks/Demo")),
+        },
+      },
+      {
         path: "cash",
         lazy: {
           Component: async () => createDemo(await import("$demos/cash/Demo")),
