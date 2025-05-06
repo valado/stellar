@@ -22,7 +22,7 @@ export const MainPage: FC = () => {
       <Button onClick={() => navigate("/demos/cash")}>Cash</Button>
       <Button onClick={() => navigate("/demos/earth")}>Earth</Button>
       <Button onClick={() => navigate("/demos/house")}>House</Button>
-      <Button onClick={() => navigate("/demos/candlesticks")}>Wrist UI</Button>
+      <Button onClick={() => navigate("/demos/candlesticks")}>Candlesticks</Button>
       <Button onClick={() => navigate("/demos/marketcap")}>MarketCap</Button>
       <Button onClick={() => navigate("/demos/wrist-ui")}>Wrist UI</Button>
     </div>
