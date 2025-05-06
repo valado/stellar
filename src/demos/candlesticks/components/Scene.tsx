@@ -1,24 +1,30 @@
 import { useXRSession } from "$stores/xr-session";
+import { usePose } from "$stores/pose";
 
 // Components
 import { Suspense } from "react";
 import { Canvas } from "@react-three/fiber";
 import { XR, IfInSessionMode } from "@react-three/xr";
-import { UI } from "$demos/wrist-ui/components/UI";
+import { HitTest } from "$components/HitTest";
+import { Overlay } from "$demos/candlesticks/components/Overlay";
+import { Chart } from "$demos/candlesticks/components/Chart";
 
 // Types
 import type { FC } from "react";
 
 export const Scene: FC = () => {
   const xrStore = useXRSession((state) => state.xrStore);
+  const pose = usePose((state) => state.pose);
 
   return (
-    <Canvas>
+    <Canvas shadows>
       <XR store={xrStore}>
         <IfInSessionMode>
           <Suspense>
-            <ambientLight intensity={2} />
-            <UI />
+            {!pose && <HitTest />}
+            <ambientLight intensity={Math.PI} />
+            <Overlay />
+            <Chart />
           </Suspense>
         </IfInSessionMode>
       </XR>

@@ -1,7 +1,9 @@
+import { useEffect, useState } from "react";
 import { useXRSession } from "$stores/xr-session";
 
 // Components
 import { Button } from "$components/Button";
+import { Card } from "$components/Card";
 
 // Types
 import type { FC, MouseEventHandler } from "react";
@@ -12,7 +14,18 @@ type Props = {
 };
 
 export const Welcome: FC<Props> = ({ title, onEnterXR: enterXR }) => {
+  const [isXRSupported, setIsXRSupported] = useState(false);
   const isActiveSession = useXRSession((state) => state.isActiveSession);
+
+  const checkXRSupport = async () => {
+    setIsXRSupported(
+      !!navigator.xr && (await navigator.xr.isSessionSupported("immersive-ar")),
+    );
+  };
+
+  useEffect(() => {
+    checkXRSupport();
+  }, []);
 
   if (isActiveSession) {
     return null;
@@ -27,7 +40,25 @@ export const Welcome: FC<Props> = ({ title, onEnterXR: enterXR }) => {
         />
         <h1 className="text-lg">{title}</h1>
       </div>
-      <Button onClick={enterXR}>AR-Umgebung starten</Button>
+      {isXRSupported ? (
+        <Button onClick={enterXR}>AR-Umgebung starten</Button>
+      ) : (
+        <Card>
+          <div className="flex flex-col gap-2 max-w-64">
+            <span className="text-xl">Entschuldigung</span>
+            <span className="text-neutral-400">
+              Leider unterstützt dieser Browser{" "}
+              <a
+                href="https://developer.mozilla.org/en-US/docs/Games/Techniques/3D_on_the_web/WebXR"
+                className="border-b-[0.1em]"
+              >
+                WebXR
+              </a>{" "}
+              nicht.
+            </span>
+          </div>
+        </Card>
+      )}
     </div>
   );
 };
