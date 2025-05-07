@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { Quaternion, Vector3 } from "three";
 
-export const useQuaternion = (initialQuaternion: Quaternion) => {
-  const [quaternion, setQuaternion] = useState<Quaternion>(initialQuaternion);
+export const useQuaternion = (initial?: Quaternion) => {
+  const [quaternion, setQuaternion] = useState<Quaternion>(
+    initial || new Quaternion(),
+  );
 
   const isDraggingRef = useRef<boolean>(false);
   const lastTouchXRef = useRef<number | null>(null);

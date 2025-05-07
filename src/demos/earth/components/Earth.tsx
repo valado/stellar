@@ -1,135 +1,105 @@
-import { useEffect, useRef, useState } from "react";
-import { Vector3, Quaternion, MathUtils } from "three";
-import { useFrame } from "@react-three/fiber";
+import { useEffect, useRef } from "react";
+import {
+  Vector3,
+  Quaternion,
+  MeshBasicMaterial,
+  Mesh,
+  BoxGeometry,
+  MathUtils,
+} from "three";
+import { useThree } from "@react-three/fiber";
 import { useXRInputSourceEvent } from "@react-three/xr";
-import * as THREE from "three";
-
-// Components
-import { Gltf } from "@react-three/drei";
-
-// Stores
+import { useTexture } from "@react-three/drei";
+import { useQuaternion } from "$hooks/use-quaternion";
 import { useHits } from "$stores/hits";
 import { usePose } from "$stores/pose";
 
 // Types
 import type { FC } from "react";
 
-const INITIAL_SCALE = new Vector3(1.2, 1.2, 1.2);
+const INITIAL_QUATERNION = new Quaternion(0, 0, 0);
 
-const getTouchDistance = (touches: TouchList) => {
-  const dx = touches[0].clientX - touches[1].clientX;
-  const dy = touches[0].clientY - touches[1].clientY;
-  return Math.sqrt(dx * dx + dy * dy);
-};
+const RADIUS = 0.5;
+
+const toSpherical = (lat: number, lon: number) =>
+  [
+    MathUtils.degToRad(90 - lat), // Phi
+    MathUtils.degToRad(lon), // Theta
+  ] as const;
+
+const points: number[][] = [
+  [48.13743, 11.57549], // München, Deutschland
+  [48.856614, 2.3522219], // Paris, Frankreich
+  [40.71427, -74.00597], // New York City, USA
+  [-33.86785, 151.20732], // Sydney, Australia
+];
 
 export const Earth: FC = () => {
-  const [scale, setScale] = useState(INITIAL_SCALE);
-  const [autoAnimate, setAutoAnimate] = useState(true);
   const hits = useHits((state) => state.hits);
   const pose = usePose((state) => state.pose);
   const setPose = usePose((state) => state.setPose);
 
-  const isDraggingRef = useRef<boolean>(false);
-  const lastTouchRef = useRef<{ x: number; y: number } | null>(null);
-  const touchDistanceRef = useRef<number | null>(null);
-  const scaleRef = useRef<Vector3 | null>(null);
-  const earthRef = useRef<THREE.Group>(null);
+  const pointMeshesRef = useRef<Mesh[]>([]);
 
-  // Logic for custom touch gestures.
+  const { scene } = useThree();
+
+  const quaternion = useQuaternion(pose?.quaternion || INITIAL_QUATERNION);
+
+  const [albedo, bump] = useTexture([
+    "/textures/earth_albedo.jpg",
+    "/textures/earth_bump.png",
+  ]);
+
   useEffect(() => {
-    const onTouchStart = (e: TouchEvent) => {
-      if (e.touches.length === 1) {
-        isDraggingRef.current = true;
-        lastTouchRef.current = {
-          x: e.touches[0].clientX,
-          y: e.touches[0].clientY,
-        };
-      }
-    };
+    if (!pose) {
+      return;
+    }
 
-    const onTouchMove = (event: TouchEvent) => {
-      if (!pose) return;
+    pointMeshesRef.current.forEach((mesh) => scene.remove(mesh));
+    pointMeshesRef.current = [];
 
-      // Handle scaling.
-      if (event.touches.length === 2 && pose) {
-        setAutoAnimate(false);
+    for (const [lat, lon] of points) {
+      const box = new Mesh(
+        new BoxGeometry(0.005, 0.005, 0.5),
+        new MeshBasicMaterial({ color: 0xff0000 }),
+      );
 
-        const distance = getTouchDistance(event.touches);
+      const position = new Vector3()
+        .setFromSphericalCoords(RADIUS, ...toSpherical(lat, lon))
+        .add(pose.position);
 
-        if (!touchDistanceRef.current) {
-          touchDistanceRef.current = distance;
-          scaleRef.current = scale.clone();
-          return;
-        }
+      box.position.copy(position);
 
-        const factor = distance / touchDistanceRef.current;
+      box.lookAt(pose.position);
 
-        const oldScale = scaleRef.current || INITIAL_SCALE;
-        const newScale = oldScale.clone().multiplyScalar(factor);
+      pointMeshesRef.current.push(box);
 
-        const clamped = new Vector3(
-          MathUtils.clamp(newScale.x, 0.1, 5),
-          MathUtils.clamp(newScale.y, 0.1, 5),
-          MathUtils.clamp(newScale.z, 0.1, 5)
-        );
-
-        setScale(clamped);
-      }
-
-      // Handle rotation.
-      if (event.touches.length === 1 && isDraggingRef.current) {
-        setAutoAnimate(false);
-
-        const { clientX, clientY } = event.touches[0];
-        const last = lastTouchRef.current;
-
-        if (last) {
-          const deltaX = clientX - last.x;
-          const deltaY = clientY - last.y;
-
-          const rotationSpeed = -0.005;
-
-          const qX = new Quaternion().setFromAxisAngle(
-            new Vector3(0, 1, 0),
-            -deltaX * rotationSpeed
-          );
-
-          const qY = new Quaternion().setFromAxisAngle(
-            new Vector3(1, 0, 0),
-            -deltaY * rotationSpeed
-          );
-
-          const newQuaternion = pose.quaternion
-            .clone()
-            .multiply(qX)
-            .multiply(qY);
-
-          setPose({ ...pose, quaternion: newQuaternion });
-        }
-
-        lastTouchRef.current = { x: clientX, y: clientY };
-      }
-    };
-
-    const onTouchEnd = () => {
-      isDraggingRef.current = false;
-      lastTouchRef.current = null;
-      touchDistanceRef.current = null;
-      scaleRef.current = null;
-    };
-
-    window.addEventListener("touchstart", onTouchStart, { passive: false });
-    window.addEventListener("touchmove", onTouchMove, { passive: false });
-    window.addEventListener("touchend", onTouchEnd);
-    window.addEventListener("touchcancel", onTouchEnd);
+      scene.add(box);
+    }
 
     return () => {
-      window.removeEventListener("touchstart", onTouchStart);
-      window.removeEventListener("touchmove", onTouchMove);
-      window.removeEventListener("touchend", onTouchEnd);
-      window.removeEventListener("touchcancel", onTouchEnd);
+      pointMeshesRef.current.forEach((mesh) => scene.remove(mesh));
+      pointMeshesRef.current = [];
     };
-  }, [pose, scale]);
+  }, [pose, points]);
+
+  useEffect(() => {
+    if (!pose || !pointMeshesRef.current.length) {
+      return;
+    }
+
+    pointMeshesRef.current.forEach((mesh, i) => {
+      const [lat, lon] = points[i];
+
+      const position = new Vector3()
+        .setFromSphericalCoords(RADIUS, ...toSpherical(lat, lon))
+        .applyQuaternion(quaternion)
+        .add(pose.position);
+
+      mesh.position.copy(position);
+      mesh.lookAt(pose.position);
+    });
+  }, [pose, points, quaternion]);
 
   // Logic for placing the Earth model at the selected location.
   useXRInputSourceEvent(
@@ -156,31 +126,19 @@ export const Earth: FC = () => {
         quaternion,
       });
     },
-    [pose, hits]
+    [pose, hits],
   );
-
-  useFrame((_, delta) => {
-    if (!autoAnimate || !earthRef.current || !pose) {
-      return;
-    }
-
-    const t = performance.now() * 0.001;
-
-    earthRef.current.position.y = pose.position.y + Math.sin(t * 0.5) * 0.05;
-    earthRef.current.rotation.y += delta * 0.1;
-  });
 
   if (!pose) {
     return null;
   }
 
   return (
-    <Gltf
-      src="/models/earth.glb"
-      {...pose}
-      ref={earthRef}
-      scale={scale}
-      dispose={null}
-    />
+    <group position={pose.position} rotation={[0, MathUtils.degToRad(-90), 0]}>
+      <mesh quaternion={quaternion}>
+        <sphereGeometry args={[RADIUS, 40, 40]} />
+        <meshStandardMaterial map={albedo} bumpMap={bump} />
+      </mesh>
+    </group>
   );
 };
