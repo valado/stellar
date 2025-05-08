@@ -3,7 +3,7 @@ import { useXRInputSourceEvent } from "@react-three/xr";
 import { Quaternion, Vector3 } from "three";
 import { useHits } from "$stores/hits";
 import { usePose } from "$stores/pose";
-import { useScale } from "$hooks/use-scale";
+import { useScale } from "$hooks/scale";
 import { useSelection } from "$demos/candlesticks/stores/selection";
 
 // Components
@@ -71,8 +71,6 @@ export const Chart: FC = () => {
       .then((res) => res.json())
       .then(setStocks);
   }, []);
-
-  useEffect(() => console.log(stocks), [stocks]); // TODO: Entfernen!
 
   // Logic for placing the candlesticks at the selected location.
   useXRInputSourceEvent(
