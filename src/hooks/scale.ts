@@ -1,12 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { MathUtils, Vector3 } from "three";
 
-export const useScale = (
-  initialScale: Vector3,
-  minScale?: Vector3,
-  maxScale?: Vector3,
-) => {
-  const [scale, setScale] = useState(initialScale);
+export const useScale = (initial?: Vector3, min?: Vector3, max?: Vector3) => {
+  const [scale, setScale] = useState(initial || new Vector3());
 
   const touchDistanceRef = useRef<number | null>(null);
   const scaleRef = useRef<Vector3 | null>(null);
@@ -31,19 +27,19 @@ export const useScale = (
 
         const scaleFactor = newDistance / touchDistanceRef.current;
 
-        const oldScale = scaleRef.current || initialScale;
+        const oldScale = scaleRef.current || scale.clone();
         const newScale = oldScale.multiplyScalar(scaleFactor);
 
-        if (!minScale || !maxScale) {
+        if (!min || !max) {
           setScale(newScale);
           return;
         }
 
         setScale(
           new Vector3(
-            MathUtils.clamp(newScale.x, minScale.x, maxScale.x),
-            MathUtils.clamp(newScale.y, minScale.y, maxScale.y),
-            MathUtils.clamp(newScale.z, minScale.z, maxScale.z),
+            MathUtils.clamp(newScale.x, min.x, max.x),
+            MathUtils.clamp(newScale.y, min.y, max.y),
+            MathUtils.clamp(newScale.z, min.z, max.z),
           ),
         );
       }
@@ -63,7 +59,7 @@ export const useScale = (
       window.removeEventListener("touchend", onTouchEnd);
       window.removeEventListener("touchcancel", onTouchEnd);
     };
-  }, [scale, minScale, maxScale]);
+  }, [scale, min, max]);
 
   return scale;
 };
