@@ -1,8 +1,10 @@
-import { memo, useEffect, useRef, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import { useXRInputSourceEvent } from "@react-three/xr";
-import { MathUtils, Quaternion, Vector3 } from "three";
+import { Quaternion, Vector3 } from "three";
 import { useHits } from "$stores/hits";
 import { usePose } from "$stores/pose";
+import { useScale } from "$hooks/use-scale";
+import { useSelection } from "$demos/candlesticks/stores/selection";
 
 // Components
 import { Suspense } from "react";
@@ -18,30 +20,12 @@ type Props = {
   volume: number;
 };
 
-const INITIAL_SCALE = new Vector3(0.8, 0.8, 0.8);
+const INITIAL_SCALE = new Vector3(0.7, 0.7, 0.7);
+const MIN_SCALE = new Vector3(0.2, INITIAL_SCALE.y, INITIAL_SCALE.z);
+const MAX_SCALE = new Vector3(1, INITIAL_SCALE.y, INITIAL_SCALE.z);
+
 const BODY_WIDTH = 0.1;
 const WICK_WIDTH = 0.01;
-
-const candlesticks: Props[] = [
-  { open: 1.0, close: 0.9, high: 1.3, low: 0.8, volume: 0.5 },
-  { open: 0.9, close: 0.6, high: 1.1, low: 0.5, volume: 0.4 },
-  { open: 0.6, close: 0.5, high: 1.2, low: 0.4, volume: 0.35 },
-  { open: 0.5, close: 0.1, high: 0.8, low: 0.2, volume: 0.5 },
-  { open: 0.1, close: 0.4, high: 0.5, low: 0.0, volume: 0.55 },
-  { open: 0.4, close: 0.6, high: 0.7, low: 0.3, volume: 0.45 },
-  { open: 0.6, close: 0.7, high: 0.9, low: 0.5, volume: 0.3 },
-  { open: 0.7, close: 1.0, high: 1.2, low: 0.2, volume: 0.25 },
-  { open: 1.0, close: 0.6, high: 1.1, low: 0.5, volume: 0.4 },
-  { open: 0.6, close: 0.7, high: 0.8, low: 0.5, volume: 0.6 },
-  { open: 0.7, close: 0.8, high: 0.9, low: 0.6, volume: 0.5 },
-  { open: 0.8, close: 1.5, high: 1.7, low: 0.7, volume: 0.55 },
-];
-
-const getTouchDistance = (touches: TouchList) => {
-  const dx = touches[0].clientX - touches[1].clientX;
-  const dy = touches[0].clientY - touches[1].clientY;
-  return Math.sqrt(dx * dx + dy * dy);
-};
 
 const Candlestick: FC<Props> = memo(({ open, close, high, low, volume }) => {
   const bodyHeight = Math.abs(close - open);
@@ -74,104 +58,21 @@ const Candlestick: FC<Props> = memo(({ open, close, high, low, volume }) => {
 });
 
 export const Chart: FC = () => {
-  const [scale, setScale] = useState<Vector3>(INITIAL_SCALE);
+  const [stocks, setStocks] = useState<Record<string, Props[]>>({});
   const hits = useHits((state) => state.hits);
   const pose = usePose((state) => state.pose);
   const setPose = usePose((state) => state.setPose);
+  const selection = useSelection((state) => state.selection);
 
-  const isDraggingRef = useRef<boolean>(false);
-  const lastTouchXRef = useRef<number | null>(null);
-  const touchDistanceRef = useRef<number | null>(null);
-  const scaleRef = useRef<Vector3 | null>(null);
+  const scale = useScale(INITIAL_SCALE, MIN_SCALE, MAX_SCALE);
 
-  // Logic for custom touch gestures.
   useEffect(() => {
-    if (!pose) {
-      setScale(INITIAL_SCALE);
-      return;
-    }
+    fetch("/stocks/normalized.json")
+      .then((res) => res.json())
+      .then(setStocks);
+  }, []);
 
-    const onTouchStart = (event: TouchEvent) => {
-      if (event.touches.length === 1 && pose) {
-        isDraggingRef.current = true;
-        lastTouchXRef.current = event.touches[0].clientX;
-      }
-    };
-
-    const onTouchMove = (event: TouchEvent) => {
-      if (!pose) {
-        return;
-      }
-
-      // Handle scaling.
-      if (event.touches.length === 2) {
-        event.preventDefault();
-        const newDistance = getTouchDistance(event.touches);
-
-        if (!touchDistanceRef.current) {
-          touchDistanceRef.current = newDistance;
-          scaleRef.current = scale.clone();
-          return;
-        }
-
-        const scaleFactor = newDistance / touchDistanceRef.current;
-
-        const oldScale = scaleRef.current || INITIAL_SCALE;
-        const newScale = oldScale.multiplyScalar(scaleFactor);
-
-        const clamped = new Vector3(
-          MathUtils.clamp(newScale.x, 0.2, INITIAL_SCALE.x * 2),
-          INITIAL_SCALE.y,
-          INITIAL_SCALE.z,
-        );
-
-        setScale(clamped);
-      }
-
-      // Handle rotation.
-      if (event.touches.length === 1 && isDraggingRef.current) {
-        const currentX = event.touches[0].clientX;
-
-        if (lastTouchXRef.current !== null) {
-          const deltaX = currentX - lastTouchXRef.current;
-          const rotationSpeed = -0.005;
-
-          const yRotation = new Quaternion().setFromAxisAngle(
-            new Vector3(0, 1, 0),
-            -deltaX * rotationSpeed,
-          );
-
-          const newQuaternion = pose.quaternion.clone().multiply(yRotation);
-
-          setPose({
-            ...pose,
-            quaternion: newQuaternion,
-          });
-        }
-
-        lastTouchXRef.current = currentX;
-      }
-    };
-
-    const onTouchEnd = () => {
-      isDraggingRef.current = false;
-      lastTouchXRef.current = null;
-      touchDistanceRef.current = null;
-      scaleRef.current = null;
-    };
-
-    window.addEventListener("touchstart", onTouchStart, { passive: false });
-    window.addEventListener("touchmove", onTouchMove, { passive: false });
-    window.addEventListener("touchend", onTouchEnd);
-    window.addEventListener("touchcancel", onTouchEnd);
-
-    return () => {
-      window.removeEventListener("touchstart", onTouchStart);
-      window.removeEventListener("touchmove", onTouchMove);
-      window.removeEventListener("touchend", onTouchEnd);
-      window.removeEventListener("touchcancel", onTouchEnd);
-    };
-  }, [pose, scale]);
+  useEffect(() => console.log(stocks), [stocks]); // TODO: Entfernen!
 
   // Logic for placing the candlesticks at the selected location.
   useXRInputSourceEvent(
@@ -206,14 +107,23 @@ export const Chart: FC = () => {
   }
 
   return (
-    <Suspense fallback={null}>
-      <group {...pose} scale={scale} dispose={null}>
-        {candlesticks.map((data, i) => (
-          <group key={i} position={[i * BODY_WIDTH * 1.05, 0, 0]}>
+    <group
+      position={[
+        pose.position.x - Math.floor(stocks[selection].length / 2) * BODY_WIDTH,
+        pose.position.y,
+        pose.position.z,
+      ]}
+      quaternion={pose.quaternion}
+      scale={scale}
+      dispose={null}
+    >
+      <Suspense fallback={null}>
+        {stocks[selection].map((data, i) => (
+          <group key={i} position={[i * BODY_WIDTH, 0, 0]}>
             <Candlestick {...data} />
           </group>
         ))}
-      </group>
-    </Suspense>
+      </Suspense>
+    </group>
   );
 };

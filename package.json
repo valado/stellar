@@ -15,6 +15,7 @@
     "@react-three/fiber": "^9.1.2",
     "@react-three/uikit": "^0.8.15",
     "@react-three/uikit-apfel": "^0.8.15",
+    "@react-three/uikit-default": "^0.8.18",
     "@react-three/uikit-lucide": "^0.8.16",
     "@react-three/xr": "^6.6.13",
     "@tailwindcss/vite": "^4.1.4",

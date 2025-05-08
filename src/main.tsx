@@ -5,6 +5,8 @@ import { createDemo } from "$factories/demo";
 // Components
 import { StrictMode } from "react";
 import { RouterProvider } from "react-router";
+import { Card } from "$components/Card";
+import { Loader } from "$components/Loader";
 
 // CSS
 import "./index.css";
@@ -17,6 +19,16 @@ const router = createBrowserRouter([
   },
   {
     path: "demos",
+    HydrateFallback: () => (
+      <div className="absolute flex flex-col gap-4 top-1/2 left-1/2 -translate-1/2 select-none z-10">
+        <Card>
+          <div className="flex flex-col items-center gap-2 min-w-48 text-center">
+            <Loader />
+            <span className="font-2xl animate-pulse">Wird geladen...</span>
+          </div>
+        </Card>
+      </div>
+    ),
     children: [
       {
         path: "candlesticks",
@@ -46,7 +58,8 @@ const router = createBrowserRouter([
       {
         path: "marketcap",
         lazy: {
-          Component: async () => createDemo(await import("$demos/marketcap/Demo")),
+          Component: async () =>
+            createDemo(await import("$demos/marketcap/Demo")),
         },
       },
       {
