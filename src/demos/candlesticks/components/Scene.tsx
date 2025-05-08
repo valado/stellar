@@ -7,6 +7,7 @@ import { Canvas } from "@react-three/fiber";
 import { XR, IfInSessionMode } from "@react-three/xr";
 import { HitTest } from "$components/HitTest";
 import { Overlay } from "$demos/candlesticks/components/Overlay";
+import { UI } from "$demos/candlesticks/components/UI";
 import { Chart } from "$demos/candlesticks/components/Chart";
 
 // Types
@@ -22,8 +23,10 @@ export const Scene: FC = () => {
         <IfInSessionMode>
           <Suspense>
             {!pose && <HitTest />}
-            <ambientLight intensity={Math.PI} />
+            <ambientLight intensity={0.5} />
+            <directionalLight intensity={1} position={[-5, 5, 10]} />
             <Overlay />
+            <UI />
             <Chart />
           </Suspense>
         </IfInSessionMode>
