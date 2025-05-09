@@ -29,7 +29,8 @@
       "$demos/*": ["demos/*"],
       "$factories/*": ["factories/*"],
       "$hooks/*": ["hooks/*"],
-      "$stores/*": ["stores/*"]
+      "$stores/*": ["stores/*"],
+      "$utils/*": ["utils/*"]
     }
   },
   "include": ["src"]
