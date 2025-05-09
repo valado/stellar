@@ -2,7 +2,7 @@ import { useXRSession } from "$stores/xr-session";
 import { usePose } from "$stores/pose";
 
 // Components
-import { Suspense } from "react";
+import { Suspense, useState } from "react";
 import { Canvas } from "@react-three/fiber";
 import { XR, IfInSessionMode } from "@react-three/xr";
 import { HitTest } from "$components/HitTest";
@@ -15,6 +15,14 @@ import type { FC } from "react";
 export const Scene: FC = () => {
   const xrStore = useXRSession((state) => state.xrStore);
   const pose = usePose((state) => state.pose);
+  const [earthIndex, setEarthIndex] = useState(0);
+
+const earthVariants = [
+  Earth
+];
+
+const ActiveEarth = earthVariants[earthIndex];
+
 
   return (
     <Canvas>
@@ -23,8 +31,11 @@ export const Scene: FC = () => {
           <Suspense>
             {!pose && <HitTest />}
             <ambientLight intensity={Math.PI} />
-            <Overlay />
-            <Earth />
+            <Overlay earthIndex={earthIndex}
+  setEarthIndex={setEarthIndex}
+  total={earthVariants.length}/>
+            <ActiveEarth 
+            />
           </Suspense>
         </IfInSessionMode>
       </XR>

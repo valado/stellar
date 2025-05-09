@@ -6,7 +6,7 @@ import { Suspense } from "react";
 import { Canvas } from "@react-three/fiber";
 import { XR, IfInSessionMode } from "@react-three/xr";
 import { HitTest } from "$components/HitTest";
-import { Overlay } from "$demos/earth/components/Overlay";
+import { Overlay } from "$demos/marketcap/components/Overlay";
 
 // Types
 import type { FC } from "react";

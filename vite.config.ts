@@ -38,6 +38,10 @@ export default defineConfig({
         find: "$stores",
         replacement: new URL("src/stores", import.meta.url).pathname,
       },
+      {
+        find: "@/",
+        replacement: new URL(".", import.meta.url).pathname,
+      }
     ],
   },
 });

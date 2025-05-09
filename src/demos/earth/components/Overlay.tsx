@@ -14,7 +14,13 @@ import { Loader } from "$components/Loader";
 // Types
 import type { FC, MouseEventHandler } from "react";
 
-export const Overlay: FC = () => {
+type Props = {
+  earthIndex: number;
+  setEarthIndex: (index: number) => void;
+  total: number;
+};
+
+export const Overlay: FC<Props> = ({ earthIndex, setEarthIndex, total }) => {
   const [isTakingLonger, setIsTakingLonger] = useState(false);
   const hits = useHits((state) => state.hits);
   const pose = usePose((state) => state.pose);
@@ -55,10 +61,32 @@ export const Overlay: FC = () => {
       </div>
 
       {pose && (
+        <div>
+          <div           className="absolute top-1/2 left-4 -translate-y-1/2 "
+          >
+        <Button
+          onClick={() =>
+            setEarthIndex((earthIndex - 1 + total) % total)
+          }
+
+        >
+          ←
+        </Button>
+        </div>
+        <div     className="absolute top-1/2 right-4 -translate-y-1/2"        >
+        <Button
+          onClick={() =>
+            setEarthIndex((earthIndex + 1) % total)
+          }
+        >
+          →
+        </Button>
+        </div>
         <div className="absolute flex flex-col gap-4 bottom-4 right-4 z-10">
           <Button onClick={reset}>
             <RotateCcwIcon />
           </Button>
+        </div>
         </div>
       )}
 

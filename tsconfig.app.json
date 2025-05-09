@@ -23,13 +23,14 @@
     "noUncheckedSideEffectImports": true,
 
     /* Aliases */
-    "baseUrl": "src",
+    "baseUrl": ".",
     "paths": {
-      "$components/*": ["components/*"],
-      "$demos/*": ["demos/*"],
-      "$factories/*": ["factories/*"],
-      "$hooks/*": ["hooks/*"],
-      "$stores/*": ["stores/*"]
+      "$components/*": ["src/components/*"],
+      "$demos/*": ["src/demos/*"],
+      "$factories/*": ["src/factories/*"],
+      "$hooks/*": ["src/hooks/*"],
+      "$stores/*": ["src/stores/*"],
+      "@/*": ["./*"]
     }
   },
   "include": ["src"]

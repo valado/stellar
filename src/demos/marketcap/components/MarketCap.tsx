@@ -12,14 +12,14 @@ type Company = {
 const companies: Company[] = [
   {
     name: "Firma A",
-    marketCap: 400,
-    revenue: 250,
+    marketCap: 200,
+    revenue: 125,
     color: "green",
   },
   {
     name: "Firma B",
-    marketCap: 220,
-    revenue: 300,
+    marketCap: 110,
+    revenue: 150,
     color: "red",
   },
 ];
