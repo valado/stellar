@@ -116,7 +116,7 @@ export const Chart: FC = () => {
     <group
       position={[
         pose.position.x - Math.floor(stocks[selection].length / 2) * BODY_WIDTH,
-        pose.position.y,
+        pose.position.y + 1,
         pose.position.z,
       ]}
       quaternion={pose.quaternion}
