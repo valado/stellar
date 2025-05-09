@@ -5,7 +5,7 @@ import { useHits } from "$stores/hits";
 import { useLabelOrigin } from "$demos/house/stores/label-origin";
 
 // Components
-import { XRDomOverlay } from "@react-three/xr";
+import { useXR, XRDomOverlay } from "@react-three/xr";
 import {
   EuroIcon,
   EyeClosedIcon,
@@ -22,8 +22,12 @@ import { Label } from "$demos/house/components/Label";
 
 // Types
 import type { FC, MouseEventHandler } from "react";
+import { UI } from "./UI";
 
 export const Overlay: FC = () => {
+  const isHandheld = useXR(
+    (state) => state.session?.interactionMode === "screen-space",
+  );
   const [areLabelsHidden, setAreLabelsHidden] = useState(false);
   const [isFinancialLabels, setIsFinancialLabels] = useState(true);
   const [isTakingLonger, setIsTakingLonger] = useState(false);
@@ -114,7 +118,8 @@ export const Overlay: FC = () => {
         </>
       )}
 
-      {pose && !areLabelsHidden && isFinancialLabels && (
+      {!isHandheld && (<UI></UI>)}
+      {isHandheld && pose && !areLabelsHidden && isFinancialLabels && (
         <>
           <Label title="Immobilienwert" body="€ 2.650.000" offsetX={-100} />
           <Label title="Mtl. Hypothekenzahlung" body="€ 6.100" offsetX={100} />
@@ -123,7 +128,7 @@ export const Overlay: FC = () => {
         </>
       )}
 
-      {pose && !areLabelsHidden && !isFinancialLabels && (
+      {isHandheld && pose && !areLabelsHidden && !isFinancialLabels && (
         <>
           <Label title="Lage" body="München-Grünwald" offsetX={-100} />
           <Label title="Grundfläche" body="200 qm" offsetX={100} />
