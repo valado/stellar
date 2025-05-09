@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useXRSession } from "$stores/xr-session";
 
 // Components
-import { Button } from "$components/Button";
+import { Button } from "$components/ui";
 import { Card } from "$components/Card";
 
 // Types

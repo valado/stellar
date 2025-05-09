@@ -14,7 +14,7 @@ import {
   RulerDimensionLineIcon,
   XIcon,
 } from "lucide-react";
-import { Button } from "$components/Button";
+import { Button } from "$components/ui";
 import { Card } from "$components/Card";
 import { ScanEffect } from "$components/ScanEffect";
 import { Loader } from "$components/Loader";
