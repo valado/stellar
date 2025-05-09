@@ -15,7 +15,7 @@ import {
   XIcon,
 } from "lucide-react";
 import { Button } from "$components/Button";
-import { Card } from "$components/Card";
+import { Card, CardContent } from "$components/Card";
 import { ScanEffect } from "$components/ScanEffect";
 import { Loader } from "$components/Loader";
 import { Label } from "$demos/house/components/Label";
@@ -62,20 +62,26 @@ export const Overlay: FC = () => {
   return (
     <XRDomOverlay className="relative min-h-dvh">
       <div className="absolute top-4 left-4">
-        <Button onClick={exitXR}>
+        <Button onClick={exitXR} className="w-12 h-12">
           <XIcon />
         </Button>
       </div>
 
       {pose && (
         <div className="absolute flex flex-col gap-4 bottom-4 right-4 z-10">
-          <Button onClick={reset}>
+          <Button onClick={reset} className="w-12 h-12">
             <RotateCcwIcon />
           </Button>
-          <Button onClick={() => setIsFinancialLabels(!isFinancialLabels)}>
+          <Button
+            onClick={() => setIsFinancialLabels(!isFinancialLabels)}
+            className="w-12 h-12"
+          >
             {isFinancialLabels ? <EuroIcon /> : <RulerDimensionLineIcon />}
           </Button>
-          <Button onClick={() => setAreLabelsHidden(!areLabelsHidden)}>
+          <Button
+            onClick={() => setAreLabelsHidden(!areLabelsHidden)}
+            className="w-12 h-12"
+          >
             {areLabelsHidden ? <EyeClosedIcon /> : <EyeIcon />}
           </Button>
         </div>
@@ -86,18 +92,22 @@ export const Overlay: FC = () => {
           <ScanEffect />
           <div className="absolute flex flex-col gap-4 top-1/2 left-1/2 -translate-1/2 select-none z-10">
             <Card>
-              <div className="flex flex-col items-center gap-2 min-w-48 text-center">
-                <Loader />
-                <span className="font-2xl animate-pulse">
-                  Scanne Umgebung...
-                </span>
-              </div>
+              <CardContent className="p-6">
+                <div className="flex flex-col items-center gap-2 min-w-48 text-center">
+                  <Loader />
+                  <span className="font-2xl animate-pulse">
+                    Scanne Umgebung...
+                  </span>
+                </div>
+              </CardContent>
             </Card>
             {isTakingLonger && (
               <Card>
-                <span className="block text-center">
-                  Keine Fläche erkannt. Bitte schaue Dich weiterhin um.
-                </span>
+                <CardContent className="p-6">
+                  <span className="block text-center">
+                    Keine Fläche erkannt. Bitte schaue Dich weiterhin um.
+                  </span>
+                </CardContent>
               </Card>
             )}
           </div>

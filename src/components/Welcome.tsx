@@ -41,7 +41,9 @@ export const Welcome: FC<Props> = ({ title, onEnterXR: enterXR }) => {
         <h1 className="text-lg">{title}</h1>
       </div>
       {isXRSupported ? (
-        <Button onClick={enterXR}>AR-Umgebung starten</Button>
+        <Button onClick={enterXR} className="h-12">
+          AR-Umgebung starten
+        </Button>
       ) : (
         <Card>
           <div className="flex flex-col gap-2 max-w-64">

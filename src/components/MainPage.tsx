@@ -1,6 +1,5 @@
 import { useNavigate } from "react-router";
 
-
 // Components
 import { Button } from "$components/Button";
 
@@ -17,14 +16,19 @@ export const MainPage: FC = () => {
           src="/logo.png"
           alt="Sopra Steria Custom Software Solutions Logo"
         />
-        <h1 className="text-lg">{}</h1>
       </div>
-      <Button onClick={() => navigate("/demos/cash")}>Cash</Button>
-      <Button onClick={() => navigate("/demos/earth")}>Earth</Button>
-      <Button onClick={() => navigate("/demos/house")}>House</Button>
-      <Button onClick={() => navigate("/demos/candlesticks")}>Candlesticks</Button>
-      <Button onClick={() => navigate("/demos/marketcap")}>MarketCap</Button>
-      <Button onClick={() => navigate("/demos/wrist-ui")}>Wrist UI</Button>
+      <Button onClick={() => navigate("/demos/earth")} className="h-12">
+        Earth
+      </Button>
+      <Button onClick={() => navigate("/demos/house")} className="h-12">
+        House
+      </Button>
+      <Button onClick={() => navigate("/demos/candlesticks")} className="h-12">
+        Candlesticks
+      </Button>
+      <Button onClick={() => navigate("/demos/marketcap")} className="h-12">
+        Market Cap
+      </Button>
     </div>
   );
 };
