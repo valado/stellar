@@ -123,7 +123,7 @@ export const Chart: FC = () => {
       scale={scale}
       dispose={null}
       onPointerDown={(e) => {
-        if (!isHandheld || isDraggingRef.current) {
+        if (isHandheld || isDraggingRef.current) {
           return;
         }
 
@@ -135,7 +135,7 @@ export const Chart: FC = () => {
         });
       }}
       onPointerMove={(e) => {
-        if (!isHandheld || !isDraggingRef.current) {
+        if (isHandheld || !isDraggingRef.current) {
           return;
         }
 
@@ -145,7 +145,7 @@ export const Chart: FC = () => {
         });
       }}
       onPointerUp={() => {
-        if (!isHandheld) {
+        if (isHandheld) {
           return;
         }
 
