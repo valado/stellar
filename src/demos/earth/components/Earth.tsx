@@ -207,7 +207,7 @@ export const Earth: FC = () => {
       position={[pose.position.x, pose.position.y + OFFSET_Y, pose.position.z]}
       rotation={[0, MathUtils.degToRad(-90), 0]}
       onPointerDown={(e) => {
-        if (!isHandheld || isDraggingRef.current) {
+        if (isHandheld || isDraggingRef.current) {
           return;
         }
 
@@ -219,7 +219,7 @@ export const Earth: FC = () => {
         });
       }}
       onPointerMove={(e) => {
-        if (!isHandheld || !isDraggingRef.current) {
+        if (isHandheld || !isDraggingRef.current) {
           return;
         }
 
@@ -229,7 +229,7 @@ export const Earth: FC = () => {
         });
       }}
       onPointerUp={() => {
-        if (!isHandheld) {
+        if (isHandheld) {
           return;
         }
 
