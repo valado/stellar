@@ -1,5 +1,5 @@
-import { memo, useEffect, useState } from "react";
-import { useXRInputSourceEvent } from "@react-three/xr";
+import { memo, useEffect, useRef, useState } from "react";
+import { useXR, useXRInputSourceEvent } from "@react-three/xr";
 import { Quaternion, Vector3 } from "three";
 import { useHits } from "$stores/hits";
 import { usePose } from "$stores/pose";
@@ -64,7 +64,15 @@ export const Chart: FC = () => {
   const setPose = usePose((state) => state.setPose);
   const selection = useSelection((state) => state.selection);
 
-  const scale = useScale(INITIAL_SCALE, MIN_SCALE, MAX_SCALE);
+  const isDraggingRef = useRef(false);
+
+  const isHandheld = useXR(
+    (state) => state.session?.interactionMode === "screen-space",
+  );
+
+  const scale = isHandheld
+    ? useScale(INITIAL_SCALE, MIN_SCALE, MAX_SCALE)
+    : INITIAL_SCALE;
 
   useEffect(() => {
     fetch("/stocks/normalized.json")
@@ -108,12 +116,41 @@ export const Chart: FC = () => {
     <group
       position={[
         pose.position.x - Math.floor(stocks[selection].length / 2) * BODY_WIDTH,
-        pose.position.y,
+        pose.position.y + 1,
         pose.position.z,
       ]}
       quaternion={pose.quaternion}
       scale={scale}
       dispose={null}
+      onPointerDown={(e) => {
+        if (isHandheld || isDraggingRef.current) {
+          return;
+        }
+
+        isDraggingRef.current = true;
+
+        setPose({
+          position: e.point,
+          quaternion: new Quaternion(),
+        });
+      }}
+      onPointerMove={(e) => {
+        if (isHandheld || !isDraggingRef.current) {
+          return;
+        }
+
+        setPose({
+          position: e.point,
+          quaternion: new Quaternion(),
+        });
+      }}
+      onPointerUp={() => {
+        if (isHandheld) {
+          return;
+        }
+
+        isDraggingRef.current = false;
+      }}
     >
       <Suspense fallback={null}>
         {stocks[selection].map((data, i) => (

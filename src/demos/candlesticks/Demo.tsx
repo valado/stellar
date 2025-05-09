@@ -10,6 +10,7 @@ import { Scene } from "$demos/candlesticks/components/Scene";
 
 // Types
 import type { FC } from "react";
+import { useSelection } from "./stores/selection";
 
 export const xrStore = createXRStore({
   gaze: false,
@@ -23,10 +24,12 @@ export const xrStore = createXRStore({
 export const Demo: FC = () => {
   const resetHits = useHits((state) => state.resetHits);
   const resetPose = usePose((state) => state.resetPose);
+  const resetSelection = useSelection((state) => state.resetSelection);
 
   const enterXR = useEnterXR("immersive-ar", () => {
     resetHits();
     resetPose();
+    resetSelection();
   });
 
   return (
