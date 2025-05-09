@@ -8,7 +8,7 @@ import {
   MathUtils,
 } from "three";
 import { useThree } from "@react-three/fiber";
-import { useXRInputSourceEvent } from "@react-three/xr";
+import { useXR, useXRInputSourceEvent } from "@react-three/xr";
 import { useTexture } from "@react-three/drei";
 import { useQuaternion } from "$hooks/quaternion";
 import { useHits } from "$stores/hits";
@@ -116,11 +116,18 @@ export const Earth: FC = () => {
   const pose = usePose((state) => state.pose);
   const setPose = usePose((state) => state.setPose);
 
+  const isDraggingRef = useRef(false);
   const pointMeshesRef = useRef<Mesh[]>([]);
+
+  const isHandheld = useXR(
+    (state) => state.session?.interactionMode === "screen-space",
+  );
 
   const { scene } = useThree();
 
-  const quaternion = useQuaternion(pose?.quaternion);
+  const quaternion = isHandheld
+    ? useQuaternion(pose?.quaternion)
+    : new Quaternion();
 
   const [albedoMap, bumpMap] = useTexture([
     "/textures/earth_albedo.jpg",
@@ -199,6 +206,35 @@ export const Earth: FC = () => {
     <group
       position={[pose.position.x, pose.position.y + OFFSET_Y, pose.position.z]}
       rotation={[0, MathUtils.degToRad(-90), 0]}
+      onPointerDown={(e) => {
+        if (!isHandheld || isDraggingRef.current) {
+          return;
+        }
+
+        isDraggingRef.current = true;
+
+        setPose({
+          position: e.point,
+          quaternion,
+        });
+      }}
+      onPointerMove={(e) => {
+        if (!isHandheld || !isDraggingRef.current) {
+          return;
+        }
+
+        setPose({
+          position: e.point,
+          quaternion,
+        });
+      }}
+      onPointerUp={() => {
+        if (!isHandheld) {
+          return;
+        }
+
+        isDraggingRef.current = false;
+      }}
     >
       <mesh quaternion={quaternion}>
         <sphereGeometry args={[RADIUS, 40, 40]} />
