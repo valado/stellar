@@ -38,12 +38,6 @@ const router = createBrowserRouter([
         },
       },
       {
-        path: "cash",
-        lazy: {
-          Component: async () => createDemo(await import("$demos/cash/Demo")),
-        },
-      },
-      {
         path: "earth",
         lazy: {
           Component: async () => createDemo(await import("$demos/earth/Demo")),
