@@ -26,7 +26,7 @@ type Point = {
 };
 
 const RADIUS = 0.5;
-const OFFSET_Y = 0.5;
+const OFFSET_Y = 1;
 
 // (Haupt-)Städte und normalisierte FDI-Werte aus 2023.
 // Quelle: https://unctad.org/topic/investment/world-investment-report.
