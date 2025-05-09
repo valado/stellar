@@ -13,7 +13,6 @@ import { House } from "$demos/house/components/House";
 
 // Types
 import type { FC } from "react";
-import { UI } from "./UI";
 
 export const Scene: FC = () => {
   const xrStore = useXRSession((state) => state.xrStore);
@@ -31,7 +30,6 @@ export const Scene: FC = () => {
               backgroundRotation={[0, 0, MathUtils.degToRad(45)]}
             />
             <House />
-            
           </Suspense>
         </IfInSessionMode>
       </XR>
