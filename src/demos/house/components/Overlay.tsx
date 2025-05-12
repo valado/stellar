@@ -15,7 +15,6 @@ import {
 import { Button } from "$components/Button";
 import { Overlay as BaseOverlay } from "$components/Overlay";
 import { Scan } from "$components/Scan";
-import { UI } from "$demos/house/components/UI";
 import { Label } from "$demos/house/components/Label";
 
 // Types
@@ -65,8 +64,6 @@ export const Overlay: FC = () => {
           </Button>
         </div>
       )}
-
-      {!isHandheld && pose && <UI />}
 
       {isHandheld && pose && isLabelVisible && isFinancialLabels && (
         <>

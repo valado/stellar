@@ -1,3 +1,5 @@
+import { MathUtils } from "three";
+import { useXR } from "@react-three/xr";
 import { usePose } from "$stores/pose";
 
 // Components
@@ -8,17 +10,19 @@ import {
   CardHeader,
   CardTitle,
   Defaults,
-
 } from "@react-three/uikit-default";
 
 // Types
 import type { FC } from "react";
 
-
 export const UI: FC = () => {
   const pose = usePose((state) => state.pose);
 
-  if (!pose) {
+  const isHandheld = useXR(
+    (state) => state.session?.interactionMode === "screen-space",
+  );
+
+  if (isHandheld || !pose) {
     return null;
   }
 
@@ -29,52 +33,96 @@ export const UI: FC = () => {
     >
       <Defaults>
         <Root>
-          <Container flexDirection="row" gap={40}>
-          <Card maxWidth={380} padding={32} borderRadius={16}>
-            <CardHeader>
-              <CardTitle>
-                <Text>Hypothekdaten</Text>
-              </CardTitle>
-              <CardDescription>
-                <Text>
-                Immobilienwert: 2.650.000 Euro 
-                </Text>
-                <Text>
-                Mtl. Hypothekenzahlung: 6.100 Euro 
-                </Text>
-                <Text>Zinssatz: 2%
-                </Text>
-                <Text>  
-                Laufzeit: 30 Jahre
-                </Text>
-              </CardDescription>
-            </CardHeader>
-            
-          </Card>
-          <Card maxWidth={380} padding={32} borderRadius={16}>
-            <CardHeader>
-              <CardTitle>
-                <Text>Hausinformation</Text>
-              </CardTitle>
-              <CardDescription>
-                <Text>
-                Lage: München-Grünwald  
-                </Text>
-                <Text>
-                Grundfläche: 200 qm  
-                </Text>
-                <Text>
-                Etagen: 2  
-                </Text>
-                <Text>
-                Energie-Effizienz: B
-                </Text>
-              </CardDescription>
-            </CardHeader>
-            
-          </Card>
+          <Container flexDirection="row" gap={16}>
+            <Container flexDirection="column" gap={16}>
+              <Card>
+                <CardHeader>
+                  <CardTitle>
+                    <Text>Immobilienwert</Text>
+                  </CardTitle>
+                  <CardDescription>
+                    <Text>2.650.000 Euro</Text>
+                  </CardDescription>
+                </CardHeader>
+              </Card>
+              <Card>
+                <CardHeader>
+                  <CardTitle>
+                    <Text>Zinssatz</Text>
+                  </CardTitle>
+                  <CardDescription>
+                    <Text>2%</Text>
+                  </CardDescription>
+                </CardHeader>
+              </Card>
+            </Container>
+            <Container flexDirection="column" gap={16}>
+              <Card>
+                <CardHeader>
+                  <CardTitle>
+                    <Text>Mtl. Hypothekenzahlung</Text>
+                  </CardTitle>
+                  <CardDescription>
+                    <Text>6.100 Euro</Text>
+                  </CardDescription>
+                </CardHeader>
+              </Card>
+              <Card>
+                <CardHeader>
+                  <CardTitle>
+                    <Text>Laufzeit</Text>
+                  </CardTitle>
+                  <CardDescription>
+                    <Text>30 Jahre</Text>
+                  </CardDescription>
+                </CardHeader>
+              </Card>
+            </Container>
+            <Container flexDirection="column" gap={16}>
+              <Card>
+                <CardHeader>
+                  <CardTitle>
+                    <Text>Lage</Text>
+                  </CardTitle>
+                  <CardDescription>
+                    <Text>München-Grünwald</Text>
+                  </CardDescription>
+                </CardHeader>
+              </Card>
+              <Card>
+                <CardHeader>
+                  <CardTitle>
+                    <Text>Etagen</Text>
+                  </CardTitle>
+                  <CardDescription>
+                    <Text>2</Text>
+                  </CardDescription>
+                </CardHeader>
+              </Card>
+            </Container>
+            <Container flexDirection="column" gap={16}>
+              <Card>
+                <CardHeader>
+                  <CardTitle>
+                    <Text>Grundfläche</Text>
+                  </CardTitle>
+                  <CardDescription>
+                    <Text>200 qm</Text>
+                  </CardDescription>
+                </CardHeader>
+              </Card>
+              <Card>
+                <CardHeader>
+                  <CardTitle>
+                    <Text>Energie-Effizienzklasse</Text>
+                  </CardTitle>
+                  <CardDescription>
+                    <Text>B</Text>
+                  </CardDescription>
+                </CardHeader>
+              </Card>
+            </Container>
           </Container>
-
         </Root>
       </Defaults>
     </group>

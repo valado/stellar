@@ -1,6 +1,7 @@
+import { MathUtils } from "three";
+import { useXR } from "@react-three/xr";
 import { useXRSession } from "$stores/xr-session";
 import { usePose } from "$stores/pose";
-import { MathUtils } from "three";
 
 // Components
 import { Suspense } from "react";
@@ -9,6 +10,7 @@ import { XR, IfInSessionMode } from "@react-three/xr";
 import { Environment } from "@react-three/drei";
 import { HitTest } from "$components/HitTest";
 import { Overlay } from "$demos/house/components/Overlay";
+import { UI } from "$demos/house/components/UI";
 import { House } from "$demos/house/components/House";
 
 // Types
@@ -30,6 +32,7 @@ export const Scene: FC = () => {
           />
           <ambientLight intensity={0.6 * Math.PI} />
           <Suspense fallback={null}>
+            <UI />
             <House />
           </Suspense>
         </IfInSessionMode>
