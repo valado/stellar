@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router";
 import { useXRSession } from "$stores/xr-session";
 
 // Components
+import { ArrowLeftIcon } from "lucide-react";
 import { Button } from "$components/Button";
 import { Card } from "$components/Card";
 
@@ -16,6 +18,7 @@ type Props = {
 export const Welcome: FC<Props> = ({ title, onEnterXR: enterXR }) => {
   const [isXRSupported, setIsXRSupported] = useState(false);
   const isActiveSession = useXRSession((state) => state.isActiveSession);
+  const navigate = useNavigate();
 
   const checkXRSupport = async () => {
     setIsXRSupported(
@@ -38,7 +41,12 @@ export const Welcome: FC<Props> = ({ title, onEnterXR: enterXR }) => {
           src="/logo.png"
           alt="Sopra Steria Custom Software Solutions Logo"
         />
-        <h1 className="text-lg">{title}</h1>
+        <div className="flex items-center gap-4">
+          <Button className="w-4" onClick={() => navigate("/")}>
+            <ArrowLeftIcon />
+          </Button>
+          <h1 className="text-lg">{title}</h1>
+        </div>
       </div>
       {isXRSupported ? (
         <Button onClick={enterXR} className="h-12">
