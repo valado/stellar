@@ -5,6 +5,6 @@ import type { FC } from "react";
 
 export const Loader: FC = () => (
   <div className="animate-spin">
-    <LoaderCircleIcon className="animate-pulse" />
+    <LoaderCircleIcon />
   </div>
 );

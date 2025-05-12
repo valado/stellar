@@ -2,7 +2,7 @@ import { createXRStore } from "@react-three/xr";
 import { useEnterXR } from "$hooks/xr-session";
 import { usePose } from "$stores/pose";
 import { useHits } from "$stores/hits";
-import { useLabelOrigin } from "$demos/house/stores/label-origin";
+import { useLabels } from "$demos/house/stores/labels";
 
 // Components
 import { Input } from "$components/Input";
@@ -24,12 +24,12 @@ export const xrStore = createXRStore({
 export const Demo: FC = () => {
   const resetHits = useHits((state) => state.resetHits);
   const resetPose = usePose((state) => state.resetPose);
-  const resetLabelOrigin = useLabelOrigin((state) => state.resetLabelOrigin);
+  const resetOrigin = useLabels((state) => state.resetOrigin);
 
   const enterXR = useEnterXR("immersive-ar", () => {
     resetHits();
     resetPose();
-    resetLabelOrigin();
+    resetOrigin();
   });
 
   return (

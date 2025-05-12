@@ -10,7 +10,7 @@ export const HydrateFallback: FC = () => (
       <CardContent className="p-6">
         <div className="flex flex-col items-center gap-2 min-w-48 text-center">
           <Loader />
-          <span className="font-2xl animate-pulse">Wird geladen...</span>
+          <span className="font-2xl">Wird geladen...</span>
         </div>
       </CardContent>
     </Card>

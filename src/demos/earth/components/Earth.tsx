@@ -31,7 +31,7 @@ const OFFSET_Y = 1;
 // (Haupt-)Städte und normalisierte FDI-Werte aus 2023.
 // Quelle: https://unctad.org/topic/investment/world-investment-report.
 const points: Point[] = (() => {
-  const data = [
+  const data: Point[] = [
     {
       // München, Deutschland
       lat: 48.13743,
@@ -99,17 +99,13 @@ const points: Point[] = (() => {
   const min = Math.min(...values);
   const max = Math.max(...values);
 
-  return data.map((d) => ({
-    ...d,
-    fdi: (d.fdi - min) / (max - min),
+  return data.map(({ lat, lon, fdi, color }) => ({
+    lat: MathUtils.degToRad(90 - lat),
+    lon: MathUtils.degToRad(lon),
+    fdi: (fdi - min) / (max - min),
+    color,
   }));
 })();
-
-const toSpherical = (lat: number, lon: number) =>
-  [
-    MathUtils.degToRad(90 - lat), // Phi
-    MathUtils.degToRad(lon), // Theta
-  ] as const;
 
 export const Earth: FC = () => {
   const hits = useHits((state) => state.hits);
@@ -150,7 +146,7 @@ export const Earth: FC = () => {
       );
 
       const position = new Vector3()
-        .setFromSphericalCoords(RADIUS, ...toSpherical(lat, lon))
+        .setFromSphericalCoords(RADIUS, lat, lon)
         .applyQuaternion(quaternion)
         .add(pose.position)
         .add(new Vector3(0, OFFSET_Y, 0));

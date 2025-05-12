@@ -22,13 +22,14 @@ export const Scene: FC = () => {
     <Canvas>
       <XR store={xrStore}>
         <IfInSessionMode>
-          <Suspense>
-            {!pose && <HitTest />}
-            <Overlay />
-            <Environment
-              files="/hdr/hochsal_field_1k.hdr"
-              backgroundRotation={[0, 0, MathUtils.degToRad(45)]}
-            />
+          {!pose && <HitTest />}
+          <Overlay />
+          <Environment
+            files="/hdr/hochsal_field_1k.hdr"
+            backgroundRotation={[0, 0, MathUtils.degToRad(45)]}
+          />
+          <ambientLight intensity={0.6 * Math.PI} />
+          <Suspense fallback={null}>
             <House />
           </Suspense>
         </IfInSessionMode>
