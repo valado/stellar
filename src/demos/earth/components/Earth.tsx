@@ -16,13 +16,11 @@ import { usePose } from "$stores/pose";
 
 // Types
 import type { FC } from "react";
-import type { ColorRepresentation } from "three";
 
 type Point = {
   lat: number;
   lon: number;
   fdi: number;
-  color?: ColorRepresentation;
 };
 
 const RADIUS = 0.5;
@@ -30,8 +28,8 @@ const OFFSET_Y = 1;
 
 // (Haupt-)Städte und normalisierte FDI-Werte aus 2023.
 // Quelle: https://unctad.org/topic/investment/world-investment-report.
-const points: Point[] = (() => {
-  const data: Point[] = [
+const points = (() => {
+  const points: Point[] = [
     {
       // München, Deutschland
       lat: 48.13743,
@@ -94,17 +92,45 @@ const points: Point[] = (() => {
     },
   ];
 
-  const values = data.map((d) => d.fdi);
+  const colorRamp = (fdi: number) => {
+    if (fdi >= 0.5) {
+      return "#980043";
+    }
+
+    if (fdi >= 1.15) {
+      return "#ce1256";
+    }
+
+    if (fdi >= 0.09) {
+      return "#e7298a";
+    }
+
+    if (fdi >= 0.06) {
+      return "#df65b0";
+    }
+
+    if (fdi >= 0.04) {
+      return "#c994c7";
+    }
+
+    return "#d4b9da";
+  };
+
+  const values = points.map((point) => point.fdi);
 
   const min = Math.min(...values);
   const max = Math.max(...values);
 
-  return data.map(({ lat, lon, fdi, color }) => ({
-    lat: MathUtils.degToRad(90 - lat),
-    lon: MathUtils.degToRad(lon),
-    fdi: (fdi - min) / (max - min),
-    color,
-  }));
+  return points.map(({ lat, lon, ...point }) => {
+    const fdi = (point.fdi - min) / (max - min);
+
+    return {
+      lat: MathUtils.degToRad(90 - lat),
+      lon: MathUtils.degToRad(lon),
+      fdi,
+      color: colorRamp(fdi),
+    };
+  });
 })();
 
 export const Earth: FC = () => {
@@ -132,6 +158,8 @@ export const Earth: FC = () => {
 
   // Logic for the placement of point markers.
   useEffect(() => {
+    console.log(points.map((point) => point.fdi));
+
     if (!pose) {
       return;
     }
@@ -139,7 +167,7 @@ export const Earth: FC = () => {
     pointMeshesRef.current.forEach((mesh) => scene.remove(mesh));
     pointMeshesRef.current = [];
 
-    for (const { lat, lon, fdi, color = 0xff0000 } of points) {
+    for (const { lat, lon, fdi, color } of points) {
       const box = new Mesh(
         new BoxGeometry(0.0075, 0.0075, fdi),
         new MeshBasicMaterial({ color }),
