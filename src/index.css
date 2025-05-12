@@ -75,6 +75,7 @@
   --color-sidebar-ring: var(--sidebar-ring);
   --font-sans: "Roboto", system-ui, sans-serif;
   --animate-scan: scan 2s linear infinite;
+  --animate-look-around: look-around 5s linear infinite;
 
   @keyframes scan {
     0%,
@@ -85,6 +86,44 @@
     90%,
     100% {
       top: 100%;
+    }
+  }
+
+  @keyframes look-around {
+    0% {
+      transform: translate(0em, 0em);
+    }
+
+    10% {
+      transform: translate(1em, 0em);
+    }
+
+    20% {
+      transform: translate(1em, 1em);
+    }
+
+    30% {
+      transform: translate(0em, 1em);
+    }
+
+    50% {
+      transform: translate(0em, 0em);
+    }
+
+    60% {
+      transform: translate(-1em, 0em);
+    }
+
+    70% {
+      transform: translate(-1em, 1em);
+    }
+
+    80% {
+      transform: translate(0em, 1em);
+    }
+
+    100% {
+      transform: translate(0em, 0em);
     }
   }
 }
