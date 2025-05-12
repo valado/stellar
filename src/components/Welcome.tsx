@@ -62,6 +62,7 @@ export const Welcome: FC<Props> = ({ title, onEnterXR: enterXR }) => {
               <a
                 href="https://developer.mozilla.org/en-US/docs/Games/Techniques/3D_on_the_web/WebXR"
                 className="border-b-[0.1em]"
+                target="_blank"
               >
                 WebXR
               </a>{" "}
