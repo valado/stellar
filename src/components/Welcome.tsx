@@ -5,7 +5,13 @@ import { useXRSession } from "$stores/xr-session";
 // Components
 import { ArrowLeftIcon } from "lucide-react";
 import { Button } from "$components/Button";
-import { Card, CardDescription, CardHeader, CardTitle } from "$components/Card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "$components/Card";
 
 // Types
 import type { FC, MouseEventHandler } from "react";
@@ -15,7 +21,10 @@ type Props = {
   onEnterXR: MouseEventHandler<HTMLButtonElement>;
 };
 
+type OS = "ios" | "android";
+
 export const Welcome: FC<Props> = ({ title, onEnterXR: enterXR }) => {
+  const [os, setOS] = useState<OS>();
   const [isXRSupported, setIsXRSupported] = useState(false);
   const isActiveSession = useXRSession((state) => state.isActiveSession);
   const navigate = useNavigate();
@@ -28,6 +37,7 @@ export const Welcome: FC<Props> = ({ title, onEnterXR: enterXR }) => {
 
   useEffect(() => {
     checkXRSupport();
+    setOS(/iPad|iPhone/.test(navigator.userAgent) ? "ios" : "android");
   }, []);
 
   if (isActiveSession) {
@@ -40,7 +50,7 @@ export const Welcome: FC<Props> = ({ title, onEnterXR: enterXR }) => {
         <img
           src="/logo.png"
           alt="Sopra Steria Custom Software Solutions Logo"
-          className="pointer-events-none"
+          className="select-none pointer-events-none"
         />
         <div className="flex items-center gap-4">
           <Button className="w-4" onClick={() => navigate("/")}>
@@ -54,22 +64,39 @@ export const Welcome: FC<Props> = ({ title, onEnterXR: enterXR }) => {
           AR-Umgebung starten
         </Button>
       ) : (
-        <Card>
-          <CardHeader>
-            <CardTitle>Entschuldigung</CardTitle>
-            <CardDescription>
-              Leider unterstützt dieser Browser{" "}
-              <a
-                href="https://developer.mozilla.org/en-US/docs/Games/Techniques/3D_on_the_web/WebXR"
-                className="border-b-[0.1em]"
-                target="_blank"
-              >
-                WebXR
-              </a>{" "}
-              nicht.
-            </CardDescription>
-          </CardHeader>
-        </Card>
+        <>
+          <Card>
+            <CardHeader>
+              <CardTitle>Entschuldigung</CardTitle>
+              <CardDescription>
+                Leider unterstützt dieser Browser{" "}
+                <a
+                  href="https://developer.mozilla.org/en-US/docs/Games/Techniques/3D_on_the_web/WebXR"
+                  className="border-b-[0.1em]"
+                  target="_blank"
+                >
+                  WebXR
+                </a>{" "}
+                nicht.
+              </CardDescription>
+              <CardContent className="grid place-content-center p-6">
+                {os === "ios" ? (
+                  <a href="https://apps.apple.com/us/app/webxr-viewer/id1295998056">
+                    <img
+                      src="/badge/app_store.svg"
+                      alt="App Store Badge"
+                      width={128}
+                    />
+                  </a>
+                ) : (
+                  <a href="https://play.google.com/store/apps/details?id=com.android.chrome">
+                    <img src="/badge/play.png" alt="Play Badge" width={164} />
+                  </a>
+                )}
+              </CardContent>
+            </CardHeader>
+          </Card>
+        </>
       )}
     </div>
   );
