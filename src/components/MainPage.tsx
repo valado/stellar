@@ -15,13 +15,14 @@ export const MainPage: FC = () => {
         <img
           src="/logo.png"
           alt="Sopra Steria Custom Software Solutions Logo"
+          className="pointer-events-none"
         />
       </div>
       <Button onClick={() => navigate("/demos/earth")} className="h-12">
-        Earth
+        Erdkugel
       </Button>
       <Button onClick={() => navigate("/demos/house")} className="h-12">
-        House
+        Immobilie
       </Button>
       <Button onClick={() => navigate("/demos/candlesticks")} className="h-12">
         Candlesticks
