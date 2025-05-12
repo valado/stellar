@@ -5,13 +5,7 @@ import { useXRSession } from "$stores/xr-session";
 // Components
 import { ArrowLeftIcon } from "lucide-react";
 import { Button } from "$components/Button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "$components/Card";
+import { Card, CardDescription, CardHeader, CardTitle } from "$components/Card";
 
 // Types
 import type { FC, MouseEventHandler } from "react";
