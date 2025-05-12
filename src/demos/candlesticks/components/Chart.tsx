@@ -5,7 +5,6 @@ import { useHits } from "$stores/hits";
 import { usePose } from "$stores/pose";
 import { useScale } from "$hooks/scale";
 import { useSelection } from "$demos/candlesticks/stores/selection";
-import { useTransparency } from "$demos/candlesticks/stores/transparency";
 
 // Components
 import { Suspense } from "react";
@@ -29,8 +28,6 @@ const BODY_WIDTH = 0.1;
 const WICK_WIDTH = 0.01;
 
 const Candlestick: FC<Props> = memo(({ open, close, high, low, volume }) => {
-  const isTransparent = useTransparency((state) => state.isTransparent);
-
   const bodyHeight = Math.abs(close - open);
   const highHeight = high - Math.max(open, close);
   const lowHeight = Math.min(open, close) - low;
@@ -48,11 +45,7 @@ const Candlestick: FC<Props> = memo(({ open, close, high, low, volume }) => {
       {/* Body */}
       <mesh position={[0, (open + close) / 2, 0]}>
         <boxGeometry args={[BODY_WIDTH, bodyHeight, volume]} />
-        <meshBasicMaterial
-          transparent={isTransparent}
-          opacity={isTransparent ? 0.9 : 1}
-          color={color}
-        />
+        <meshBasicMaterial transparent opacity={0.9} color={color} />
       </mesh>
 
       {/* Low */}
