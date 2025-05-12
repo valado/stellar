@@ -26,9 +26,6 @@ export const MainPage: FC = () => {
       <Button onClick={() => navigate("/demos/candlesticks")} className="h-12">
         Candlesticks
       </Button>
-      <Button onClick={() => navigate("/demos/marketcap")} className="h-12">
-        Market Cap
-      </Button>
     </div>
   );
 };
