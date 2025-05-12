@@ -13,7 +13,7 @@ type Demo = {
 
 const demos: Demo[] = [
   {
-    name: "Immbilie",
+    name: "Immobilie",
     href: "/demos/house",
   },
   {
