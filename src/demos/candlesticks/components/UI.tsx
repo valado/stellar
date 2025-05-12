@@ -60,7 +60,6 @@ export const UI: FC = () => {
               </CardTitle>
               <CardDescription>
                 <Text>
-                  Aktienpreis für letzte halb Jahr(wöchentlich).
                   Wähle eine Option: Verwende die Schalter unten, um eine der
                   Aktien zu wählen.
                 </Text>
