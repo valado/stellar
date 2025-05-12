@@ -24,6 +24,10 @@ const demos: Demo[] = [
     name: "Erdkugel",
     href: "/demos/earth",
   },
+  {
+    name: "Market Cap",
+    href: "/demos/marketcap",
+  },
 ];
 
 export const Index: FC = () => {
