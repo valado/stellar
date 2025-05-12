@@ -1,16 +1,16 @@
 import { useXRSession } from "$stores/xr-session";
 import { usePose } from "$stores/pose";
-
-// Components
 import { Suspense } from "react";
 import { Canvas } from "@react-three/fiber";
 import { XR, IfInSessionMode } from "@react-three/xr";
 import { HitTest } from "$components/HitTest";
 import { Overlay } from "$demos/earth/components/Overlay";
+import { MarketCap } from "./MarketCap";
+import { UI } from "./UI";
 
 // Types
 import type { FC } from "react";
-import { MarketCap } from "./MarketCap";
+
 
 export const Scene: FC = () => {
   const xrStore = useXRSession((state) => state.xrStore);
@@ -25,6 +25,7 @@ export const Scene: FC = () => {
             <ambientLight intensity={Math.PI} />
             <Overlay />
             <MarketCap />
+            <UI />
           </Suspense>
         </IfInSessionMode>
       </XR>

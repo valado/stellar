@@ -42,6 +42,12 @@ const router = createBrowserRouter([
           Component: async () => createDemo(await import("$demos/house/Demo")),
         },
       },
+      {
+        path: "marketcap",
+        lazy: {
+          Component: async () => createDemo(await import("$demos/marketcap/Demo")),
+        },
+      },
     ],
   },
   {

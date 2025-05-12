@@ -2,8 +2,6 @@ import { useEffect, useRef, useState } from "react";
 import { useExitXR } from "$hooks/xr-session";
 import { usePose } from "$stores/pose";
 import { useHits } from "$stores/hits";
-
-// Components
 import { XRDomOverlay } from "@react-three/xr";
 import { RotateCcwIcon, XIcon } from "lucide-react";
 import { Button } from "$components/Button";
@@ -61,6 +59,8 @@ export const Overlay: FC = () => {
           </Button>
         </div>
       )}
+
+      
 
       {Object.keys(hits).length === 0 && (
         <>
