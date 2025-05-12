@@ -5,7 +5,13 @@ import { useXRSession } from "$stores/xr-session";
 // Components
 import { ArrowLeftIcon } from "lucide-react";
 import { Button } from "$components/Button";
-import { Card } from "$components/Card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "$components/Card";
 
 // Types
 import type { FC, MouseEventHandler } from "react";
@@ -40,6 +46,7 @@ export const Welcome: FC<Props> = ({ title, onEnterXR: enterXR }) => {
         <img
           src="/logo.png"
           alt="Sopra Steria Custom Software Solutions Logo"
+          className="pointer-events-none"
         />
         <div className="flex items-center gap-4">
           <Button className="w-4" onClick={() => navigate("/")}>
@@ -54,9 +61,9 @@ export const Welcome: FC<Props> = ({ title, onEnterXR: enterXR }) => {
         </Button>
       ) : (
         <Card>
-          <div className="flex flex-col gap-2 max-w-64">
-            <span className="text-xl">Entschuldigung</span>
-            <span className="text-neutral-400">
+          <CardHeader>
+            <CardTitle>Entschuldigung</CardTitle>
+            <CardDescription>
               Leider unterstützt dieser Browser{" "}
               <a
                 href="https://developer.mozilla.org/en-US/docs/Games/Techniques/3D_on_the_web/WebXR"
@@ -65,8 +72,8 @@ export const Welcome: FC<Props> = ({ title, onEnterXR: enterXR }) => {
                 WebXR
               </a>{" "}
               nicht.
-            </span>
-          </div>
+            </CardDescription>
+          </CardHeader>
         </Card>
       )}
     </div>
