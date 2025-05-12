@@ -7,7 +7,7 @@ import { setPreferredColorScheme } from "@react-three/uikit";
 import { StrictMode } from "react";
 import { RouterProvider } from "react-router";
 import { HydrateFallback } from "$components/HydrateFallback";
-import { MainPage } from "$components/MainPage";
+import { Index } from "$components/Index";
 
 // CSS
 import "./index.css";
@@ -17,7 +17,7 @@ setPreferredColorScheme("dark");
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <MainPage />,
+    element: <Index />,
   },
   {
     path: "demos",

@@ -34,7 +34,7 @@ export const Demo: FC = () => {
 
   return (
     <>
-      <Welcome title="AR Immobilien Demo" onEnterXR={enterXR} />
+      <Welcome title="Immobilie Demo" onEnterXR={enterXR} />
       <Scene />
     </>
   );

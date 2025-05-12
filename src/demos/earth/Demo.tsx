@@ -31,7 +31,7 @@ export const Demo: FC = () => {
 
   return (
     <>
-      <Welcome title="AR Erdkugel Demo" onEnterXR={enterXR} />
+      <Welcome title="Erdkugel Demo" onEnterXR={enterXR} />
       <Scene />
     </>
   );

@@ -2,6 +2,7 @@ import { createXRStore } from "@react-three/xr";
 import { useEnterXR } from "$hooks/xr-session";
 import { usePose } from "$stores/pose";
 import { useHits } from "$stores/hits";
+import { useSelection } from "$demos/candlesticks/stores/selection";
 
 // Components
 import { Input } from "$components/Input";
@@ -10,7 +11,6 @@ import { Scene } from "$demos/candlesticks/components/Scene";
 
 // Types
 import type { FC } from "react";
-import { useSelection } from "./stores/selection";
 
 export const xrStore = createXRStore({
   gaze: false,
@@ -34,7 +34,7 @@ export const Demo: FC = () => {
 
   return (
     <>
-      <Welcome title="AR Candlesticks Demo" onEnterXR={enterXR} />
+      <Welcome title="Candlesticks" onEnterXR={enterXR} />
       <Scene />
     </>
   );
