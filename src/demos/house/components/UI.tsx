@@ -1,4 +1,3 @@
-import { MathUtils } from "three";
 import { useXR } from "@react-three/xr";
 import { usePose } from "$stores/pose";
 
